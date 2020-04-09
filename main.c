@@ -4,6 +4,7 @@
 
 #include "myLib.h"
 #include "startbg.h"
+#include "instructions.h"
 #include "pausebg.h"
 #include "winbg.h"
 #include "losebg.h"
@@ -16,6 +17,8 @@ void initialize();
 //state prototypes
 void goToStart();
 void start();
+void goToInstructions();
+void instructions();
 void goToGame();
 void game();
 void goToPause();
@@ -26,7 +29,7 @@ void goToLose();
 void lose();
 
 // States
-enum {START, PAUSE, GAME, WIN, LOSE};
+enum {START, INSTRUCTIONS, PAUSE, GAME, WIN, LOSE};
 int state;
 
 //buttons
@@ -48,6 +51,9 @@ int main() {
             case START:
                 start();
                 break;
+			case INSTRUCTIONS:
+				instructions();
+				break;
             case PAUSE:
                 pause();
                 break;
@@ -120,6 +126,38 @@ void start() {
 		initializeGame();
 		goToGame();
 	}
+
+	if (BUTTON_PRESSED(BUTTON_SELECT)) {
+		goToInstructions();
+	}
+}
+
+void goToInstructions() {
+	// hide all the sprites
+    // any time you hide sprites, you must waitForVBlank and then DMA the shadowOAM into the OAM
+    // this is because hidesprites modifies the shadowOAM and not the real OAM
+
+	hideSprites();
+	waitForVBlank();
+	DMANow(3, shadowOAM, OAM, 512);
+
+	// load the pause tile palette
+	DMANow(3, instructionsPal, PALETTE, 256);
+
+	//load pause tiles into charblock
+	DMANow(3, instructionsTiles, &CHARBLOCK[0], 688);
+
+	//load pause map to screenblock
+	DMANow(3, instructionsMap, &SCREENBLOCK[31], 1024);
+
+	state = INSTRUCTIONS;
+}
+
+void instructions() {
+
+	if (BUTTON_PRESSED(BUTTON_SELECT)) {
+		goToStart();
+	}
 }
 
 void goToGame() {
@@ -142,7 +180,7 @@ void game() {
 		spidersCaught = 0; // reset spidersCaught to 0 for when game is played again
         goToWin();
 	} else if (loseGame) { // if lose all of your 3 lives, you lose
-		loseGame = 0; // reset loseGame to 0 for when game is played again
+		loseGame = 1; // reset loseGame to 0 for when game is played again
         goToLose();
 	}
 

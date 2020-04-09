@@ -1336,7 +1336,7 @@ int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, i
 # 6 "main.c" 2
 # 1 "startbg.h" 1
 # 22 "startbg.h"
-extern const unsigned short startbgTiles[784];
+extern const unsigned short startbgTiles[720];
 
 
 extern const unsigned short startbgMap[1024];
@@ -1344,6 +1344,16 @@ extern const unsigned short startbgMap[1024];
 
 extern const unsigned short startbgPal[256];
 # 7 "main.c" 2
+# 1 "instructions.h" 1
+# 22 "instructions.h"
+extern const unsigned short instructionsTiles[1088];
+
+
+extern const unsigned short instructionsMap[1024];
+
+
+extern const unsigned short instructionsPal[256];
+# 8 "main.c" 2
 # 1 "pausebg.h" 1
 # 22 "pausebg.h"
 extern const unsigned short pausebgTiles[432];
@@ -1353,7 +1363,7 @@ extern const unsigned short pausebgMap[1024];
 
 
 extern const unsigned short pausebgPal[256];
-# 8 "main.c" 2
+# 9 "main.c" 2
 # 1 "winbg.h" 1
 # 22 "winbg.h"
 extern const unsigned short winbgTiles[832];
@@ -1363,7 +1373,7 @@ extern const unsigned short winbgMap[1024];
 
 
 extern const unsigned short winbgPal[256];
-# 9 "main.c" 2
+# 10 "main.c" 2
 # 1 "losebg.h" 1
 # 22 "losebg.h"
 extern const unsigned short losebgTiles[1072];
@@ -1373,7 +1383,7 @@ extern const unsigned short losebgMap[1024];
 
 
 extern const unsigned short losebgPal[256];
-# 10 "main.c" 2
+# 11 "main.c" 2
 # 1 "gamebg.h" 1
 # 22 "gamebg.h"
 extern const unsigned short gamebgTiles[16];
@@ -1383,7 +1393,7 @@ extern const unsigned short gamebgMap[1024];
 
 
 extern const unsigned short gamebgPal[256];
-# 11 "main.c" 2
+# 12 "main.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -1430,7 +1440,7 @@ void updateVillager();
 void initializeSpider();
 void updateSpider();
 void spawnSpider();
-# 12 "main.c" 2
+# 13 "main.c" 2
 
 
 void initialize();
@@ -1438,6 +1448,8 @@ void initialize();
 
 void goToStart();
 void start();
+void goToInstructions();
+void instructions();
 void goToGame();
 void game();
 void goToPause();
@@ -1448,7 +1460,7 @@ void goToLose();
 void lose();
 
 
-enum {START, PAUSE, GAME, WIN, LOSE};
+enum {START, INSTRUCTIONS, PAUSE, GAME, WIN, LOSE};
 int state;
 
 
@@ -1470,6 +1482,9 @@ int main() {
             case START:
                 start();
                 break;
+   case INSTRUCTIONS:
+    instructions();
+    break;
             case PAUSE:
                 pause();
                 break;
@@ -1542,6 +1557,38 @@ void start() {
   initializeGame();
   goToGame();
  }
+
+ if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+  goToInstructions();
+ }
+}
+
+void goToInstructions() {
+
+
+
+
+ hideSprites();
+ waitForVBlank();
+ DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
+
+
+ DMANow(3, instructionsPal, ((unsigned short *)0x5000000), 256);
+
+
+ DMANow(3, instructionsTiles, &((charblock *)0x6000000)[0], 688);
+
+
+ DMANow(3, instructionsMap, &((screenblock *)0x6000000)[31], 1024);
+
+ state = INSTRUCTIONS;
+}
+
+void instructions() {
+
+ if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+  goToStart();
+ }
 }
 
 void goToGame() {
@@ -1564,7 +1611,7 @@ void game() {
   spidersCaught = 0;
         goToWin();
  } else if (loseGame) {
-  loseGame = 0;
+  loseGame = 1;
         goToLose();
  }
 

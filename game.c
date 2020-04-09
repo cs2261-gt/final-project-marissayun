@@ -208,13 +208,16 @@ void updateSpider() {
             spider.active = 0;
 
             // update attacks & check for loseGame
-            if (attacks + 1 == 3) {
+            if (attacks == 3) { 
+                lives = 0;
+                attacks = 0; // reset attacks for next playthrough
                 loseGame = 1;
             } else {
                 attacks++;
+                lives--;
             }
 
-            // reset score to 0
+            // reset score to 0 after an attack
             spidersCaught = 0;
 
         // CASE 3: no collision yet, spider moving left

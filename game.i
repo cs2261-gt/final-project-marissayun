@@ -1199,10 +1199,13 @@ void updateSpider() {
             spider.active = 0;
 
 
-            if (attacks + 1 == 3) {
+            if (attacks == 3) {
+                lives = 0;
+                attacks = 0;
                 loseGame = 1;
             } else {
                 attacks++;
+                lives--;
             }
 
 
