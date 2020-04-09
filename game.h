@@ -6,6 +6,7 @@ typedef struct {
     int cdel;
 	int width;
     int height;
+    int prevAniState;
     int aniState;
     int curFrame;
     int numFrames;

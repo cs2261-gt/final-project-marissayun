@@ -930,6 +930,7 @@ typedef struct {
     int cdel;
  int width;
     int height;
+    int prevAniState;
     int aniState;
     int curFrame;
     int numFrames;
@@ -989,6 +990,13 @@ extern const unsigned short treesMap[2048];
 
 extern const unsigned short treesPal[256];
 # 6 "game.c" 2
+# 1 "tempspritesheet.h" 1
+# 21 "tempspritesheet.h"
+extern const unsigned short tempspritesheetTiles[16384];
+
+
+extern const unsigned short tempspritesheetPal[256];
+# 7 "game.c" 2
 
 
 VILLAGER villager;
@@ -998,6 +1006,12 @@ int attacks;
 int lives;
 int spiderTimer;
 int loseGame;
+
+
+
+
+
+enum {SPRITERIGHT, SPRITENET, SPRITEIDLE};
 
 
 unsigned short hOff;
@@ -1024,6 +1038,10 @@ void initializeGame() {
 
     DMANow(3, treesMap, &((screenblock *)0x6000000)[30], 4096 / 2);
 
+
+    DMANow(3, tempspritesheetPal, ((unsigned short *)0x5000200), 512 / 2);
+    DMANow(3, tempspritesheetTiles, &((charblock *)0x6000000)[4], 32768 / 2);
+
     hOff = 0;
 
 
@@ -1038,7 +1056,16 @@ void initializeGame() {
 }
 
 void initializeVillager() {
-
+    villager.width = 64;
+    villager.height = 64;
+    villager.cdel = 1;
+    villager.rdel = 1;
+    villager.col = 0 + (villager.width / 2);
+ villager.row = 160 - (villager.height / 2) - 50;
+    villager.aniCounter = 0;
+    villager.curFrame = 0;
+    villager.numFrames = 3;
+ villager.aniState = SPRITERIGHT;
 }
 
 void initializeSpider() {
@@ -1061,15 +1088,49 @@ void updateGame() {
     (*(volatile unsigned short *)0x04000010) = hOff;
     (*(volatile unsigned short *)0x04000014) = hOff / 2;
 
-
-
+    updateVillager();
+    updateSpider();
 }
 
 void drawGame() {
 
+    shadowOAM[0].attr0 = villager.row | (0<<13) | (0<<14);
+    shadowOAM[0].attr1 = villager.col | (3<<14);
+    shadowOAM[0].attr2 = ((villager.curFrame * 8)*32+(villager.aniState * 8));
 }
 
 void updateVillager() {
+
+
+    if (villager.aniState != SPRITEIDLE) {
+        villager.prevAniState = villager.aniState;
+        villager.aniState = SPRITEIDLE;
+    }
+
+
+    if(villager.aniCounter % 20 == 0) {
+        villager.curFrame = (villager.curFrame + 1) % villager.numFrames;
+    }
+
+
+    if((~((*(volatile unsigned short *)0x04000130)) & ((1<<4)))) {
+        villager.aniState = SPRITERIGHT;
+    }
+
+    if((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
+        villager.aniState = SPRITENET;
+    }
+
+
+
+
+
+    if (villager.aniState == SPRITEIDLE) {
+        villager.curFrame = 0;
+        villager.aniState = villager.prevAniState;
+    } else {
+        villager.aniCounter++;
+    }
 
 }
 
