@@ -2,7 +2,6 @@
 typedef struct {
 	int row;
 	int col;
-    int rdel;
     int cdel;
 	int width;
     int height;
@@ -11,14 +10,12 @@ typedef struct {
     int curFrame;
     int numFrames;
     int aniCounter;
-    int active;
 } VILLAGER;
 
 // spider struct
 typedef struct {
 	int row;
 	int col;
-    int rdel;
     int cdel;
 	int width;
     int height;
@@ -45,3 +42,4 @@ void updateVillager();
 //spider prototypes
 void initializeSpider();
 void updateSpider();
+void spawnSpider();

@@ -21,7 +21,7 @@ initializeGame:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, lr}
+	push	{r4, r5, r6, r7, r8, lr}
 	mov	r3, #256
 	ldr	r4, .L4
 	mov	r2, #83886080
@@ -70,34 +70,51 @@ initializeGame:
 	ldr	r1, .L4+56
 	mov	lr, pc
 	bx	r4
-	mov	r2, #0
-	mov	r4, #32
-	mov	lr, #78
-	mov	ip, #64
-	mov	r0, #1
-	mov	r1, #3
-	ldr	r3, .L4+60
-	strh	r2, [r3]	@ movhi
-	ldr	r3, .L4+64
-	str	r2, [r3]
-	ldr	r3, .L4+68
-	str	r2, [r3]
-	ldr	r3, .L4+72
-	str	r2, [r3]
-	ldr	r3, .L4+76
-	str	r2, [r3, #40]
-	str	r2, [r3, #32]
-	str	r2, [r3, #28]
-	ldr	r2, .L4+80
-	str	r4, [r3, #4]
-	str	lr, [r3]
-	str	ip, [r3, #16]
-	str	ip, [r3, #20]
-	str	r0, [r3, #12]
-	str	r0, [r3, #8]
-	str	r1, [r3, #36]
-	str	r1, [r2]
-	pop	{r4, r5, r6, lr}
+	mov	r3, #0
+	mov	r2, #64
+	mov	lr, #1
+	mov	ip, #32
+	mov	r0, #3
+	mov	r7, #78
+	mov	r6, #240
+	mov	r5, #110
+	mov	r4, #4
+	ldr	r1, .L4+60
+	strh	r3, [r1]	@ movhi
+	ldr	r1, .L4+64
+	str	r3, [r1]
+	ldr	r1, .L4+68
+	str	r3, [r1]
+	ldr	r1, .L4+72
+	str	r3, [r1]
+	ldr	r1, .L4+76
+	str	r3, [r1]
+	ldr	r1, .L4+80
+	str	r3, [r1]
+	ldr	r1, .L4+84
+	str	r2, [r1, #12]
+	str	r2, [r1, #16]
+	ldr	r2, .L4+88
+	str	r3, [r1, #36]
+	str	r3, [r1, #28]
+	str	r3, [r1, #24]
+	str	r3, [r2, #32]
+	str	r3, [r2, #24]
+	str	r3, [r2, #36]
+	ldr	r3, .L4+92
+	str	r7, [r1]
+	str	lr, [r1, #8]
+	str	lr, [r2, #8]
+	str	r6, [r2, #4]
+	str	r5, [r2]
+	str	r4, [r2, #20]
+	str	ip, [r1, #4]
+	str	ip, [r2, #12]
+	str	ip, [r2, #16]
+	str	r0, [r1, #32]
+	str	r0, [r2, #28]
+	str	r0, [r3]
+	pop	{r4, r5, r6, r7, r8, lr}
 	bx	lr
 .L5:
 	.align	2
@@ -120,8 +137,11 @@ initializeGame:
 	.word	hOff
 	.word	spidersCaught
 	.word	attacks
+	.word	spiderTimer
+	.word	seed
 	.word	loseGame
 	.word	villager
+	.word	spider
 	.word	lives
 	.size	initializeGame, .-initializeGame
 	.align	2
@@ -136,22 +156,20 @@ initializeVillager:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
 	mov	r2, #0
-	mov	r0, #64
-	mov	r4, #32
-	mov	lr, #78
-	mov	r1, #1
-	mov	ip, #3
+	mov	r1, #64
+	mov	r4, #1
+	mov	lr, #32
+	mov	ip, #78
+	mov	r0, #3
 	ldr	r3, .L8
-	str	r4, [r3, #4]
-	str	lr, [r3]
-	str	r0, [r3, #16]
-	str	r0, [r3, #20]
-	str	ip, [r3, #36]
+	stm	r3, {ip, lr}
+	str	r4, [r3, #8]
 	str	r1, [r3, #12]
-	str	r1, [r3, #8]
-	str	r2, [r3, #40]
-	str	r2, [r3, #32]
+	str	r1, [r3, #16]
+	str	r0, [r3, #32]
+	str	r2, [r3, #36]
 	str	r2, [r3, #28]
+	str	r2, [r3, #24]
 	pop	{r4, lr}
 	bx	lr
 .L9:
@@ -169,8 +187,34 @@ initializeSpider:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
+	push	{r4, r5, lr}
+	mov	r5, #1
+	mov	r1, #0
+	mov	r4, #240
+	mov	lr, #3
+	mov	r0, #32
+	mov	ip, #4
+	ldr	r3, .L12
+	ldr	r3, [r3, #16]
+	add	r3, r3, r3, lsr #31
+	asr	r2, r3, r5
+	ldr	r3, .L12+4
+	rsb	r2, r2, #142
+	stm	r3, {r2, r4, r5}
+	str	lr, [r3, #28]
+	str	ip, [r3, #20]
+	str	r0, [r3, #12]
+	str	r0, [r3, #16]
+	str	r1, [r3, #32]
+	str	r1, [r3, #24]
+	str	r1, [r3, #36]
+	pop	{r4, r5, lr}
 	bx	lr
+.L13:
+	.align	2
+.L12:
+	.word	villager
+	.word	spider
 	.size	initializeSpider, .-initializeSpider
 	.align	2
 	.global	drawGame
@@ -182,25 +226,39 @@ drawGame:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	ldr	r1, .L12
-	ldr	r2, [r1, #4]
-	mvn	r2, r2, lsl #18
-	mvn	r2, r2, lsr #18
-	add	r3, r1, #28
-	ldm	r3, {r3, ip}
-	ldr	r0, .L12+4
-	ldr	r1, [r1]
-	add	r3, r3, ip, lsl #5
-	lsl	r3, r3, #3
-	strh	r2, [r0, #2]	@ movhi
-	strh	r1, [r0]	@ movhi
-	strh	r3, [r0, #4]	@ movhi
+	push	{r4, r5, lr}
+	ldr	r2, .L16
+	ldr	lr, .L16+4
+	ldr	ip, [r2, #4]
+	ldr	r1, [lr, #4]
+	mvn	ip, ip, lsl #18
+	mvn	r1, r1, lsl #17
+	mvn	ip, ip, lsr #18
+	mvn	r1, r1, lsr #17
+	add	r0, r2, #24
+	ldm	r0, {r0, r5}
+	ldr	r4, [r2]
+	add	r2, lr, #20
+	add	r0, r0, r5, lsl #5
+	ldm	r2, {r2, r5}
+	ldr	r3, .L16+8
+	ldr	lr, [lr]
+	add	r2, r2, r5, lsl #5
+	lsl	r0, r0, #3
+	lsl	r2, r2, #2
+	strh	r4, [r3]	@ movhi
+	strh	lr, [r3, #32]	@ movhi
+	strh	ip, [r3, #2]	@ movhi
+	strh	r0, [r3, #4]	@ movhi
+	strh	r1, [r3, #34]	@ movhi
+	strh	r2, [r3, #36]	@ movhi
+	pop	{r4, r5, lr}
 	bx	lr
-.L13:
+.L17:
 	.align	2
-.L12:
+.L16:
 	.word	villager
+	.word	spider
 	.word	shadowOAM
 	.size	drawGame, .-drawGame
 	.global	__aeabi_idivmod
@@ -215,120 +273,104 @@ updateVillager:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r4, .L35
-	ldr	r3, [r4, #28]
+	ldr	r4, .L39
+	ldr	r3, [r4, #24]
 	cmp	r3, #2
 	movne	r2, #2
-	ldr	r5, [r4, #40]
-	strne	r3, [r4, #24]
-	ldr	r3, .L35+4
-	strne	r2, [r4, #28]
+	ldr	r5, [r4, #36]
+	strne	r3, [r4, #20]
+	ldr	r3, .L39+4
+	strne	r2, [r4, #24]
 	smull	r1, r2, r3, r5
 	asr	r3, r5, #31
 	rsb	r3, r3, r2, asr #3
 	add	r3, r3, r3, lsl #2
 	cmp	r5, r3, lsl #2
-	bne	.L16
-	ldr	r0, [r4, #32]
-	ldr	r3, .L35+8
-	ldr	r1, [r4, #36]
+	bne	.L20
+	ldr	r0, [r4, #28]
+	ldr	r3, .L39+8
+	ldr	r1, [r4, #32]
 	add	r0, r0, #1
 	mov	lr, pc
 	bx	r3
-	str	r1, [r4, #32]
-.L16:
-	ldr	r3, .L35+12
-	ldr	r2, .L35+16
+	str	r1, [r4, #28]
+.L20:
+	ldr	r3, .L39+12
+	ldr	r2, .L39+16
 	ldrh	r3, [r3, #48]
 	ldrh	r2, [r2]
 	ands	r3, r3, #16
 	and	r2, r2, #1
-	bne	.L17
+	bne	.L21
+	ldr	r0, .L39+20
+	ldrh	r1, [r0]
 	cmp	r2, #0
-	str	r3, [r4, #28]
-	bne	.L18
-.L23:
+	add	r2, r1, #1
+	str	r3, [r4, #24]
+	strh	r2, [r0]	@ movhi
+	bne	.L22
+.L27:
 	add	r5, r5, #1
-	str	r5, [r4, #40]
+	str	r5, [r4, #36]
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L18:
-	ldr	r3, .L35+20
+.L22:
+	ldr	r3, .L39+24
 	ldrh	r3, [r3]
 	tst	r3, #1
-	bne	.L23
-.L20:
+	bne	.L27
+.L24:
 	mov	r3, #1
-	str	r3, [r4, #28]
-	b	.L23
-.L17:
+	str	r3, [r4, #24]
+	b	.L27
+.L21:
 	cmp	r2, #0
-	beq	.L21
-	ldr	r3, .L35+20
+	beq	.L25
+	ldr	r3, .L39+24
 	ldrh	r3, [r3]
 	tst	r3, #1
-	beq	.L20
-.L21:
-	ldr	r3, [r4, #28]
-	cmp	r3, #2
-	bne	.L23
-	mov	r2, #0
+	beq	.L24
+.L25:
 	ldr	r3, [r4, #24]
-	str	r2, [r4, #32]
-	str	r3, [r4, #28]
+	cmp	r3, #2
+	bne	.L27
+	mov	r2, #0
+	ldr	r3, [r4, #20]
+	str	r2, [r4, #28]
+	str	r3, [r4, #24]
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L36:
+.L40:
 	.align	2
-.L35:
+.L39:
 	.word	villager
 	.word	1717986919
 	.word	__aeabi_idivmod
 	.word	67109120
 	.word	oldButtons
+	.word	hOff
 	.word	buttons
 	.size	updateVillager, .-updateVillager
 	.align	2
-	.global	updateGame
+	.global	spawnSpider
 	.syntax unified
 	.arm
 	.fpu softvfp
-	.type	updateGame, %function
-updateGame:
+	.type	spawnSpider, %function
+spawnSpider:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r3, .L43
-	ldrh	r3, [r3, #48]
-	push	{r4, lr}
-	ldr	r4, .L43+4
-	tst	r3, #32
-	ldrheq	r3, [r4]
-	subeq	r3, r3, #1
-	strheq	r3, [r4]	@ movhi
-	ldr	r3, .L43
-	ldrh	r3, [r3, #48]
-	tst	r3, #16
-	ldrheq	r3, [r4]
-	addeq	r3, r3, #1
-	strheq	r3, [r4]	@ movhi
-	ldr	r3, .L43+8
-	mov	lr, pc
-	bx	r3
-	mov	r3, #67108864
-	ldrh	r2, [r4]
-	lsr	r1, r2, #1
-	strh	r2, [r3, #16]	@ movhi
-	pop	{r4, lr}
-	strh	r1, [r3, #20]	@ movhi
-	b	updateVillager
-.L44:
-	.align	2
+	@ link register save eliminated.
+	mov	r2, #1
+	ldr	r3, .L42
+	str	r2, [r3, #36]
+	bx	lr
 .L43:
-	.word	67109120
-	.word	hOff
-	.word	waitForVBlank
-	.size	updateGame, .-updateGame
+	.align	2
+.L42:
+	.word	spider
+	.size	spawnSpider, .-spawnSpider
 	.align	2
 	.global	updateSpider
 	.syntax unified
@@ -339,16 +381,207 @@ updateSpider:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
+	push	{r4, r5, r6, r7, lr}
+	ldr	r4, .L61
+	ldr	r5, [r4, #32]
+	add	r3, r5, r5, lsl #4
+	ldr	r2, .L61+4
+	add	r3, r3, r3, lsl #8
+	ldr	r1, .L61+8
+	add	r3, r3, r3, lsl #16
+	sub	r2, r2, r3
+	cmp	r2, r1
+	sub	sp, sp, #20
+	bcs	.L45
+	ldr	r0, [r4, #24]
+	ldr	r3, .L61+12
+	ldr	r1, [r4, #28]
+	add	r0, r0, #1
+	mov	lr, pc
+	bx	r3
+	str	r1, [r4, #24]
+.L45:
+	ldr	r3, [r4, #36]
+	add	r5, r5, #1
+	cmp	r3, #0
+	str	r5, [r4, #32]
+	bne	.L59
+	mov	r2, #240
+	mov	r3, #1
+	str	r2, [r4, #4]
+	str	r3, [r4, #36]
+.L44:
+	add	sp, sp, #20
+	@ sp needed
+	pop	{r4, r5, r6, r7, lr}
 	bx	lr
+.L59:
+	mov	r7, #0
+	ldr	r5, .L61+16
+	ldm	r5, {r2, r3}
+	ldr	r1, [r5, #16]
+	str	r2, [sp, #4]
+	str	r1, [sp, #12]
+	str	r3, [sp]
+	str	r7, [sp, #8]
+	add	r2, r4, #12
+	ldm	r2, {r2, r3}
+	ldr	r1, [r4]
+	ldr	r0, [r4, #4]
+	ldr	r6, .L61+20
+	mov	lr, pc
+	bx	r6
+	cmp	r0, r7
+	beq	.L47
+	ldr	r3, [r5, #24]
+	cmp	r3, #1
+	beq	.L60
+.L47:
+	ldr	r3, [r5, #12]
+	ldm	r5, {r1, r2}
+	ldr	r0, [r5, #16]
+	add	r3, r3, r3, lsr #31
+	asr	r3, r3, #1
+	str	r0, [sp, #12]
+	str	r1, [sp, #4]
+	str	r2, [sp]
+	str	r3, [sp, #8]
+	add	r2, r4, #12
+	ldm	r2, {r2, r3}
+	ldr	r1, [r4]
+	ldr	r0, [r4, #4]
+	mov	lr, pc
+	bx	r6
+	cmp	r0, #0
+	beq	.L49
+	ldr	r3, [r5, #24]
+	bics	r3, r3, #2
+	bne	.L49
+	ldr	r1, .L61+24
+	ldr	r2, [r1]
+	cmp	r2, #2
+	moveq	r2, #1
+	str	r3, [r4, #36]
+	ldreq	r3, .L61+28
+	addne	r2, r2, #1
+	streq	r2, [r3]
+	strne	r2, [r1]
+	mov	r2, #0
+	ldr	r3, .L61+32
+	str	r2, [r3]
+	b	.L44
+.L49:
+	ldr	r3, .L61+36
+	mov	lr, pc
+	bx	r3
+	ldr	r3, .L61+40
+	smull	r2, r3, r0, r3
+	sub	r3, r3, r0, asr #31
+	add	r3, r3, r3, lsl #1
+	ldr	r2, [r4, #8]
+	sub	r0, r0, r3
+	add	r0, r0, r0, lsr #31
+	ldr	r3, [r4, #4]
+	add	r0, r2, r0, asr #1
+	sub	r0, r3, r0
+	str	r0, [r4, #4]
+	add	sp, sp, #20
+	@ sp needed
+	pop	{r4, r5, r6, r7, lr}
+	bx	lr
+.L60:
+	ldr	r2, .L61+32
+	ldr	r3, [r2]
+	add	r3, r3, #1
+	str	r7, [r4, #36]
+	str	r3, [r2]
+	b	.L44
+.L62:
+	.align	2
+.L61:
+	.word	spider
+	.word	143165576
+	.word	286331153
+	.word	__aeabi_idivmod
+	.word	villager
+	.word	collision
+	.word	attacks
+	.word	loseGame
+	.word	spidersCaught
+	.word	rand
+	.word	1431655766
 	.size	updateSpider, .-updateSpider
+	.align	2
+	.global	updateGame
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	updateGame, %function
+updateGame:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	push	{r4, lr}
+	ldr	r3, .L67
+	mov	lr, pc
+	bx	r3
+	mov	r3, #67108864
+	ldr	r2, .L67+4
+	ldrh	r2, [r2]
+	lsr	r1, r2, #1
+	strh	r2, [r3, #16]	@ movhi
+	strh	r1, [r3, #20]	@ movhi
+	bl	updateVillager
+	bl	updateSpider
+	ldr	r3, .L67+8
+	ldr	r0, [r3]
+	ldr	r2, .L67+12
+	add	r0, r0, #1
+	str	r0, [r3]
+	mov	lr, pc
+	bx	r2
+	ldr	r3, .L67+16
+	mov	lr, pc
+	bx	r3
+	ldr	r3, .L67+20
+	smull	r2, r3, r0, r3
+	sub	r3, r3, r0, asr #31
+	add	r3, r3, r3, lsl #1
+	ldr	r2, .L67+24
+	sub	r0, r0, r3
+	rsb	r3, r0, r0, lsl #5
+	add	r0, r0, r3, lsl #2
+	ldr	r3, [r2]
+	add	r0, r0, r0, lsl #2
+	cmp	r3, r0, lsl #3
+	movge	r1, #1
+	movge	r3, r1
+	ldrge	r0, .L67+28
+	addlt	r3, r3, #1
+	strge	r1, [r0, #36]
+	str	r3, [r2]
+	pop	{r4, lr}
+	bx	lr
+.L68:
+	.align	2
+.L67:
+	.word	waitForVBlank
+	.word	hOff
+	.word	seed
+	.word	srand
+	.word	rand
+	.word	1431655766
+	.word	spiderTimer
+	.word	spider
+	.size	updateGame, .-updateGame
 	.comm	shadowOAM,1024,4
+	.comm	seed,4,4
 	.comm	hOff,2,2
 	.comm	loseGame,4,4
 	.comm	spiderTimer,4,4
 	.comm	lives,4,4
 	.comm	attacks,4,4
 	.comm	spidersCaught,4,4
-	.comm	spider,44,4
-	.comm	villager,48,4
+	.comm	spider,40,4
+	.comm	villager,40,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

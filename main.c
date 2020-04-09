@@ -33,9 +33,6 @@ int state;
 unsigned short buttons;
 unsigned short oldButtons;
 
-//random seed
-int seed;
-
 int main() {
 
     initialize();
@@ -110,9 +107,6 @@ void goToStart() {
 	waitForVBlank();
 	DMANow(3, shadowOAM, OAM, 512);
 
-	//begin seed randomization
-	seed = 0;
-
 	state = START;
 
 }
@@ -120,11 +114,7 @@ void goToStart() {
 
 void start() {
 
-	seed++;
-
 	if (BUTTON_PRESSED(BUTTON_START)) {
-		//seed random number generator
-		srand(seed);
 
         // start the game!
 		initializeGame();
@@ -149,6 +139,7 @@ void game() {
 	if (BUTTON_PRESSED(BUTTON_START)) {
 		goToPause();
 	} else if (spidersCaught == 5) { // win if you catch 5 spiders
+		spidersCaught = 0; // reset spidersCaught to 0 for when game is played again
         goToWin();
 	} else if (loseGame) { // if lose all of your 3 lives, you lose
 		loseGame = 0; // reset loseGame to 0 for when game is played again

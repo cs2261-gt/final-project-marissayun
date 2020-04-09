@@ -1389,22 +1389,20 @@ extern const unsigned short gamebgPal[256];
 typedef struct {
  int row;
  int col;
-    int rdel;
     int cdel;
  int width;
     int height;
+    int prevAniState;
     int aniState;
     int curFrame;
     int numFrames;
     int aniCounter;
-    int active;
 } VILLAGER;
 
 
 typedef struct {
  int row;
  int col;
-    int rdel;
     int cdel;
  int width;
     int height;
@@ -1431,6 +1429,7 @@ void updateVillager();
 
 void initializeSpider();
 void updateSpider();
+void spawnSpider();
 # 12 "main.c" 2
 
 
@@ -1455,9 +1454,6 @@ int state;
 
 unsigned short buttons;
 unsigned short oldButtons;
-
-
-int seed;
 
 int main() {
 
@@ -1533,9 +1529,6 @@ void goToStart() {
  waitForVBlank();
  DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
-
- seed = 0;
-
  state = START;
 
 }
@@ -1543,11 +1536,7 @@ void goToStart() {
 
 void start() {
 
- seed++;
-
  if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
-
-  srand(seed);
 
 
   initializeGame();
@@ -1572,6 +1561,7 @@ void game() {
  if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
   goToPause();
  } else if (spidersCaught == 5) {
+  spidersCaught = 0;
         goToWin();
  } else if (loseGame) {
   loseGame = 0;

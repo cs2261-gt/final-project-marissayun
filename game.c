@@ -23,12 +23,17 @@ enum {SPRITERIGHT, SPRITENET, SPRITEIDLE};
 // Horizontal Offset
 unsigned short hOff;
 
+//random seed
+int seed;
+
 OBJ_ATTR shadowOAM[128];
 
 void initializeGame() {
     
     //load spritesheet palette and tiles
-    //initialize backgrounds
+    //initialize backgrounds 
+    // NOTE: for now these backgrounds are temporary! 
+    // will work on original art for next milestone
 
     // load tile palette
     DMANow(3, furtherTreesPal, PALETTE, 256);
@@ -55,6 +60,8 @@ void initializeGame() {
     spidersCaught = 0;
     attacks = 0;
     lives = 3;
+    spiderTimer = 0;
+    seed = 0;
 
     loseGame = 0;
 
@@ -66,29 +73,29 @@ void initializeVillager() {
     villager.width = 64;
     villager.height = 64;
     villager.cdel = 1;
-    villager.rdel = 1;
     villager.col = 0 + (villager.width / 2);
-	villager.row = SCREENHEIGHT - (villager.height / 2) - 50;
-    villager.aniCounter = 0;
+	villager.row = SCREENHEIGHT - (villager.height / 2) - 50; // aligned with ground
+    villager.aniCounter = 0; 
     villager.curFrame = 0;
-    villager.numFrames = 3;
+    villager.numFrames = 3; // 3 animation frames
 	villager.aniState = SPRITERIGHT; 
 }
 
 void initializeSpider() {
-
+    spider.width = 32;
+    spider.height = 32;
+    spider.cdel = 1;
+    spider.col = SCREENWIDTH; // not visible - just off of the right wall of the screen
+	spider.row = SCREENHEIGHT - (villager.height / 2) - 50 + spider.height; // aligned with ground
+    spider.aniCounter = 0;
+    spider.curFrame = 0; // row
+    spider.numFrames = 3; // 3 animation frames
+	spider.aniState = 4; // col
+    spider.active = 0;
 }
 
 // update game each frame
 void updateGame() {
-    // Scroll the background
-    if(BUTTON_HELD(BUTTON_LEFT)) {
-        hOff--;
-    }
-    if(BUTTON_HELD(BUTTON_RIGHT)) {
-        hOff++;
-    }
-
     waitForVBlank();
 
     // change to implement parallax
@@ -97,6 +104,18 @@ void updateGame() {
 
     updateVillager();
     updateSpider();
+
+    seed++;
+    srand(seed);
+
+    if (spiderTimer >= (rand() % 3) * 5000) { // spider random spawn (but doesn't work correctly right now)
+
+        spiderTimer = 0;
+		spawnSpider();
+		
+	}
+
+	spiderTimer++;
 }
 
 void drawGame() {
@@ -105,6 +124,10 @@ void drawGame() {
     shadowOAM[0].attr1 = villager.col | ATTR1_LARGE;
     shadowOAM[0].attr2 = ATTR2_TILEID(villager.aniState * 8, villager.curFrame * 8);
 
+    //set up spider sprite attributes
+    shadowOAM[4].attr0 = spider.row | ATTR0_4BPP | ATTR0_SQUARE;
+    shadowOAM[4].attr1 = spider.col | ATTR1_MEDIUM;
+    shadowOAM[4].attr2 = ATTR2_TILEID(spider.aniState * 4, spider.curFrame * 4);
 }
 
 void updateVillager() {
@@ -123,6 +146,8 @@ void updateVillager() {
     // Control movement and change animation state
     if(BUTTON_HELD(BUTTON_RIGHT)) {
         villager.aniState = SPRITERIGHT;
+        // scroll the background
+        hOff++;
     }
 
     if(BUTTON_PRESSED(BUTTON_A)) {
@@ -142,9 +167,70 @@ void updateVillager() {
 
 }
 
+void spawnSpider() {
+    spider.active = 1;
+}
+
 void updateSpider() {
 
+    // Change the animation frame every 15 frames of gameplay
+    if (spider.aniCounter % 15 == 0) {
+        spider.curFrame = (spider.curFrame + 1) % spider.numFrames;
+    }
+    spider.aniCounter++;
+
+	// While active, check for collision; otherwise, move left
+	if (spider.active) {
+        // CASE 1: spider is caught
+        // the spider is caught if it has a collision with the MIDDLE of the "blue zone" (see bitmap) 
+        // while the villager is in the SPRITENET anistate 
+        // (which should match up with the timing of the spider under the net)
+        if (collision(spider.col, spider.row, spider.width, spider.height,
+            villager.col, villager.row, villager.width * (3/4), villager.height)
+            && villager.aniState == SPRITENET) { 
+
+            // spider is inactive
+            spider.active = 0;
+
+            // update the score
+            spidersCaught++;
+
+        // CASE 2: spider attacks villager
+        // the spider has a collision with the villager 
+        // but not the villager sprite itself (since that includes the blue zone)
+        // but the NON-blue zone (where the villager actually appears to be left of the blue zone)
+        // (basically the border of the nonblue and blue for the villager sprite) (see bitmap)
+        } else if (collision(spider.col, spider.row, spider.width, spider.height,
+            villager.col, villager.row, villager.width / 2, villager.height)
+            && (villager.aniState == SPRITERIGHT || villager.aniState == SPRITEIDLE)) {
+
+            // spider is inactive
+            spider.active = 0;
+
+            // update attacks & check for loseGame
+            if (attacks + 1 == 3) {
+                loseGame = 1;
+            } else {
+                attacks++;
+            }
+
+            // reset score to 0
+            spidersCaught = 0;
+
+        // CASE 3: no collision yet, spider moving left
+        } else {
+            // move spider left
+            spider.col -= (rand() % 3 / 2) + spider.cdel; // spider random speed
+        }
+
+	} else {
+        // if not active, make it hidden and reactivate it
+        spider.col = SCREENWIDTH; // hide it again
+        spider.active = 1;
+    }
 }
+
+
 
 
 
