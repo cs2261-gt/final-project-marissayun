@@ -10,6 +10,8 @@
 #include "losebg.h"
 #include "gamebg.h"
 #include "game.h"
+#include "furtherTrees.h"
+#include "trees.h"
 
 //prototypes
 void initialize();
@@ -97,6 +99,11 @@ void initialize() {
 }
 
 void goToStart() {
+
+	REG_DISPCTL = MODE0 | BG0_ENABLE | SPRITE_ENABLE; 
+	REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+	REG_BG0HOFF = 0;
+
 	// load the start tile palette
 	DMANow(3, startbgPal, PALETTE, 256);
 	
@@ -133,6 +140,11 @@ void start() {
 }
 
 void goToInstructions() {
+
+	REG_DISPCTL = MODE0 | BG0_ENABLE | SPRITE_ENABLE; 
+	REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+	REG_BG0HOFF = 0;
+
 	// hide all the sprites
     // any time you hide sprites, you must waitForVBlank and then DMA the shadowOAM into the OAM
     // this is because hidesprites modifies the shadowOAM and not the real OAM
@@ -161,6 +173,23 @@ void instructions() {
 }
 
 void goToGame() {
+	REG_DISPCTL = MODE0 | BG1_ENABLE | BG0_ENABLE | SPRITE_ENABLE;
+    
+    // load tile palette
+    DMANow(3, furtherTreesPal, PALETTE, 256);
+    // set up bg 1 control register
+    REG_BG1CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_SIZE_SMALL | BG_4BPP;
+    // load furtherTrees tiles to charblock
+    DMANow(3, furtherTreesTiles, &CHARBLOCK[0], furtherTreesTilesLen / 2);
+    // load furtherTrees map to screenblock
+    DMANow(3, furtherTreesMap, &SCREENBLOCK[28], furtherTreesMapLen / 2);
+    // set up bg 0 control register
+    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(30) | BG_SIZE_WIDE | BG_4BPP;
+    // load trees tiles to charblock
+    DMANow(3, treesTiles, &CHARBLOCK[1], treesTilesLen / 2);
+    // load trees map to screenblock
+    DMANow(3, treesMap, &SCREENBLOCK[30], treesMapLen / 2);
+
 	state = GAME;
 }
 
@@ -187,6 +216,11 @@ void game() {
 }
 
 void goToPause() {
+
+	REG_DISPCTL = MODE0 | BG0_ENABLE | SPRITE_ENABLE; 
+	REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+	REG_BG0HOFF = 0;
+
 	// hide all the sprites
     // any time you hide sprites, you must waitForVBlank and then DMA the shadowOAM into the OAM
     // this is because hidesprites modifies the shadowOAM and not the real OAM
@@ -216,6 +250,11 @@ void pause() {
 
 
 void goToWin() {
+
+	REG_DISPCTL = MODE0 | BG0_ENABLE | SPRITE_ENABLE; 
+	REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+	REG_BG0HOFF = 0;
+
 	//hide all the sprites
     // any time you hide sprites, you must waitForVBlank and then DMA the shadowOAM into the OAM
     // this is because hidesprites modifies the shadowOAM and not the real OAM
@@ -242,6 +281,11 @@ void win() {
 }
 
 void goToLose() {
+
+	REG_DISPCTL = MODE0 | BG0_ENABLE | SPRITE_ENABLE; 
+	REG_BG0CNT = BG_SIZE_SMALL | BG_CHARBLOCK(0) | BG_SCREENBLOCK(31);
+	REG_BG0HOFF = 0;
+
 	// hide all the sprites
     // any time you hide sprites, you must waitForVBlank and then DMA the shadowOAM into the OAM
     // this is because hidesprites modifies the shadowOAM and not the real OAM

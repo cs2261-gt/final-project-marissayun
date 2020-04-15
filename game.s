@@ -24,50 +24,15 @@ initializeGame:
 	push	{r4, r5, r6, r7, r8, lr}
 	mov	r3, #256
 	ldr	r4, .L4
-	mov	r2, #83886080
 	mov	r0, #3
-	ldr	r1, .L4+4
-	mov	lr, pc
-	bx	r4
-	mov	r5, #67108864
-	mov	r2, #7168
-	mov	r3, #1856
-	strh	r2, [r5, #10]	@ movhi
-	mov	r0, #3
-	mov	r2, #100663296
+	ldr	r2, .L4+4
 	ldr	r1, .L4+8
-	mov	lr, pc
-	bx	r4
-	mov	r3, #1024
-	mov	r0, #3
-	ldr	r2, .L4+12
-	ldr	r1, .L4+16
-	mov	lr, pc
-	bx	r4
-	ldr	r2, .L4+20
-	mov	r0, #3
-	strh	r2, [r5, #8]	@ movhi
-	ldr	r3, .L4+24
-	ldr	r2, .L4+28
-	ldr	r1, .L4+32
-	mov	lr, pc
-	bx	r4
-	mov	r3, #2048
-	mov	r0, #3
-	ldr	r2, .L4+36
-	ldr	r1, .L4+40
-	mov	lr, pc
-	bx	r4
-	mov	r3, #256
-	mov	r0, #3
-	ldr	r2, .L4+44
-	ldr	r1, .L4+48
 	mov	lr, pc
 	bx	r4
 	mov	r3, #16384
 	mov	r0, #3
-	ldr	r2, .L4+52
-	ldr	r1, .L4+56
+	ldr	r2, .L4+12
+	ldr	r1, .L4+16
 	mov	lr, pc
 	bx	r4
 	mov	r3, #0
@@ -79,34 +44,33 @@ initializeGame:
 	mov	r6, #240
 	mov	r5, #110
 	mov	r4, #4
-	ldr	r1, .L4+60
+	ldr	r1, .L4+20
 	strh	r3, [r1]	@ movhi
-	ldr	r1, .L4+64
+	ldr	r1, .L4+24
 	str	r3, [r1]
-	ldr	r1, .L4+68
+	ldr	r1, .L4+28
 	str	r3, [r1]
-	ldr	r1, .L4+72
+	ldr	r1, .L4+32
 	str	r3, [r1]
-	ldr	r1, .L4+76
+	ldr	r1, .L4+36
 	str	r3, [r1]
-	ldr	r1, .L4+80
+	ldr	r1, .L4+40
 	str	r3, [r1]
-	ldr	r1, .L4+84
+	ldr	r1, .L4+44
 	str	r2, [r1, #12]
 	str	r2, [r1, #16]
-	ldr	r2, .L4+88
+	ldr	r2, .L4+48
 	str	r3, [r1, #36]
 	str	r3, [r1, #28]
 	str	r3, [r1, #24]
 	str	r3, [r2, #32]
 	str	r3, [r2, #24]
 	str	r3, [r2, #36]
-	ldr	r3, .L4+92
+	ldr	r3, .L4+52
+	stm	r2, {r5, r6}
 	str	r7, [r1]
 	str	lr, [r1, #8]
 	str	lr, [r2, #8]
-	str	r6, [r2, #4]
-	str	r5, [r2]
 	str	r4, [r2, #20]
 	str	ip, [r1, #4]
 	str	ip, [r2, #12]
@@ -120,16 +84,6 @@ initializeGame:
 	.align	2
 .L4:
 	.word	DMANow
-	.word	furtherTreesPal
-	.word	furtherTreesTiles
-	.word	100720640
-	.word	furtherTreesMap
-	.word	24068
-	.word	5984
-	.word	100679680
-	.word	treesTiles
-	.word	100724736
-	.word	treesMap
 	.word	83886592
 	.word	tempspritesheetPal
 	.word	100728832

@@ -1027,21 +1027,6 @@ void initializeGame() {
 
 
 
-    DMANow(3, furtherTreesPal, ((unsigned short *)0x5000000), 256);
-
-    (*(volatile unsigned short*)0x400000A) = ((0)<<2) | ((28)<<8) | (0<<14) | (0<<7);
-
-    DMANow(3, furtherTreesTiles, &((charblock *)0x6000000)[0], 3712 / 2);
-
-    DMANow(3, furtherTreesMap, &((screenblock *)0x6000000)[28], 2048 / 2);
-
-    (*(volatile unsigned short*)0x4000008) = ((1)<<2) | ((30)<<8) | (1<<14) | (0<<7);
-
-    DMANow(3, treesTiles, &((charblock *)0x6000000)[1], 11968 / 2);
-
-    DMANow(3, treesMap, &((screenblock *)0x6000000)[30], 4096 / 2);
-
-
     DMANow(3, tempspritesheetPal, ((unsigned short *)0x5000200), 512 / 2);
     DMANow(3, tempspritesheetTiles, &((charblock *)0x6000000)[4], 32768 / 2);
 

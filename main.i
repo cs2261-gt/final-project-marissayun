@@ -1441,6 +1441,26 @@ void initializeSpider();
 void updateSpider();
 void spawnSpider();
 # 13 "main.c" 2
+# 1 "furtherTrees.h" 1
+# 22 "furtherTrees.h"
+extern const unsigned short furtherTreesTiles[1856];
+
+
+extern const unsigned short furtherTreesMap[1024];
+
+
+extern const unsigned short furtherTreesPal[256];
+# 14 "main.c" 2
+# 1 "trees.h" 1
+# 22 "trees.h"
+extern const unsigned short treesTiles[5984];
+
+
+extern const unsigned short treesMap[2048];
+
+
+extern const unsigned short treesPal[256];
+# 15 "main.c" 2
 
 
 void initialize();
@@ -1529,6 +1549,11 @@ void initialize() {
 
 void goToStart() {
 
+ (*(unsigned short *)0x4000000) = 0 | (1<<8) | (1<<12);
+ (*(volatile unsigned short*)0x4000008) = (0<<14) | ((0)<<2) | ((31)<<8);
+ (*(volatile unsigned short *)0x04000010) = 0;
+
+
  DMANow(3, startbgPal, ((unsigned short *)0x5000000), 256);
 
 
@@ -1565,6 +1590,11 @@ void start() {
 
 void goToInstructions() {
 
+ (*(unsigned short *)0x4000000) = 0 | (1<<8) | (1<<12);
+ (*(volatile unsigned short*)0x4000008) = (0<<14) | ((0)<<2) | ((31)<<8);
+ (*(volatile unsigned short *)0x04000010) = 0;
+
+
 
 
 
@@ -1592,6 +1622,23 @@ void instructions() {
 }
 
 void goToGame() {
+ (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8) | (1<<12);
+
+
+    DMANow(3, furtherTreesPal, ((unsigned short *)0x5000000), 256);
+
+    (*(volatile unsigned short*)0x400000A) = ((0)<<2) | ((28)<<8) | (0<<14) | (0<<7);
+
+    DMANow(3, furtherTreesTiles, &((charblock *)0x6000000)[0], 3712 / 2);
+
+    DMANow(3, furtherTreesMap, &((screenblock *)0x6000000)[28], 2048 / 2);
+
+    (*(volatile unsigned short*)0x4000008) = ((1)<<2) | ((30)<<8) | (1<<14) | (0<<7);
+
+    DMANow(3, treesTiles, &((charblock *)0x6000000)[1], 11968 / 2);
+
+    DMANow(3, treesMap, &((screenblock *)0x6000000)[30], 4096 / 2);
+
  state = GAME;
 }
 
@@ -1618,6 +1665,11 @@ void game() {
 }
 
 void goToPause() {
+
+ (*(unsigned short *)0x4000000) = 0 | (1<<8) | (1<<12);
+ (*(volatile unsigned short*)0x4000008) = (0<<14) | ((0)<<2) | ((31)<<8);
+ (*(volatile unsigned short *)0x04000010) = 0;
+
 
 
 
@@ -1648,6 +1700,11 @@ void pause() {
 
 void goToWin() {
 
+ (*(unsigned short *)0x4000000) = 0 | (1<<8) | (1<<12);
+ (*(volatile unsigned short*)0x4000008) = (0<<14) | ((0)<<2) | ((31)<<8);
+ (*(volatile unsigned short *)0x04000010) = 0;
+
+
 
 
  hideSprites();
@@ -1673,6 +1730,11 @@ void win() {
 }
 
 void goToLose() {
+
+ (*(unsigned short *)0x4000000) = 0 | (1<<8) | (1<<12);
+ (*(volatile unsigned short*)0x4000008) = (0<<14) | ((0)<<2) | ((31)<<8);
+ (*(volatile unsigned short *)0x04000010) = 0;
+
 
 
 

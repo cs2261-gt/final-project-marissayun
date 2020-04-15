@@ -35,21 +35,6 @@ void initializeGame() {
     // NOTE: for now these backgrounds are temporary! 
     // will work on original art for next milestone
 
-    // load tile palette
-    DMANow(3, furtherTreesPal, PALETTE, 256);
-    // set up bg 1 control register
-    REG_BG1CNT = BG_CHARBLOCK(0) | BG_SCREENBLOCK(28) | BG_SIZE_SMALL | BG_4BPP;
-    // load furtherTrees tiles to charblock
-    DMANow(3, furtherTreesTiles, &CHARBLOCK[0], furtherTreesTilesLen / 2);
-    // load furtherTrees map to screenblock
-    DMANow(3, furtherTreesMap, &SCREENBLOCK[28], furtherTreesMapLen / 2);
-    // set up bg 0 control register
-    REG_BG0CNT = BG_CHARBLOCK(1) | BG_SCREENBLOCK(30) | BG_SIZE_WIDE | BG_4BPP;
-    // load trees tiles to charblock
-    DMANow(3, treesTiles, &CHARBLOCK[1], treesTilesLen / 2);
-    // load trees map to screenblock
-    DMANow(3, treesMap, &SCREENBLOCK[30], treesMapLen / 2);
-
     // load the spritesheet Tiles and Pal into THEIR desired spaces in memory
     DMANow(3, tempspritesheetPal, SPRITEPALETTE, tempspritesheetPalLen / 2);
     DMANow(3, tempspritesheetTiles, &CHARBLOCK[4], tempspritesheetTilesLen / 2);
