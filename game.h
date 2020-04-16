@@ -31,6 +31,7 @@ extern int spidersCaught;
 extern int attacks;
 extern int lives;
 extern int loseGame;
+extern int winGame;
 
 //game prototypes
 void initializeGame();

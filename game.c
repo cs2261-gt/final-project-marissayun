@@ -13,6 +13,7 @@ int attacks;
 int lives;
 int spiderTimer;
 int loseGame;
+int winGame;
 // States used for villager.aniState
 // SPRITERIGHT is default walking right (since can only move right)
 // SPRITENET is one anistate where the net is making contact with the ground
@@ -49,6 +50,7 @@ void initializeGame() {
     seed = 0;
 
     loseGame = 0;
+    winGame = 0;
 
     initializeVillager();
     initializeSpider();
@@ -124,7 +126,7 @@ void updateVillager() {
     }
 
     // Change the animation frame every 20 frames of gameplay
-    if(villager.aniCounter % 20 == 0) {
+    if(villager.aniCounter % 15 == 0) {
         villager.curFrame = (villager.curFrame + 1) % villager.numFrames;
     }
 
@@ -167,11 +169,11 @@ void updateSpider() {
 	// While active, check for collision; otherwise, move left
 	if (spider.active) {
         // CASE 1: spider is caught
-        // the spider is caught if it has a collision with the MIDDLE of the "blue zone" (see bitmap) 
-        // while the villager is in the SPRITENET anistate 
+        // the spider is caught if it has a collision with the villager sprite 
+        // (so the entire width, includes empty area where net will be)
         // (which should match up with the timing of the spider under the net)
         if (collision(spider.col, spider.row, spider.width, spider.height,
-            villager.col, villager.row, villager.width * (3/4), villager.height)
+            villager.col, villager.row, villager.width, villager.height)
             && villager.aniState == SPRITENET) { 
 
             // spider is inactive
@@ -182,9 +184,8 @@ void updateSpider() {
 
         // CASE 2: spider attacks villager
         // the spider has a collision with the villager 
-        // but not the villager sprite itself (since that includes the blue zone)
-        // but the NON-blue zone (where the villager actually appears to be left of the blue zone)
-        // (basically the border of the nonblue and blue for the villager sprite) (see bitmap)
+        // but not the "villager" sprite itself 
+        // (so half of the villager width, doesn't include net area)
         } else if (collision(spider.col, spider.row, spider.width, spider.height,
             villager.col, villager.row, villager.width / 2, villager.height)
             && (villager.aniState == SPRITERIGHT || villager.aniState == SPRITEIDLE)) {
@@ -192,19 +193,18 @@ void updateSpider() {
             // spider is inactive
             spider.active = 0;
 
+            // resets score to 0 after an attack
+            spidersCaught = 0;
+
             // update attacks & check for loseGame
             if (attacks == 3) { 
                 lives = 0;
                 attacks = 0; // reset attacks for next playthrough
-                spidersCaught = 0; // reset attacks for next playthrough
                 loseGame = 1;
             } else {
                 attacks++;
                 lives--;
             }
-
-            // reset score to 0 after an attack
-            spidersCaught = 0;
 
         // CASE 3: no collision yet, spider moving left
         } else {
@@ -217,6 +217,15 @@ void updateSpider() {
         spider.col = SCREENWIDTH; // hide it again
         spider.active = 1;
     }
+
+    if (spidersCaught == 5) {
+        // need this winGame variable because otherwise,
+        // will not show the net catching animation for 5th spider caught
+        // and will go directly to win screen
+        spidersCaught = 0; // reset spidersCaught to 0 for when game is played again
+        winGame = 1;
+    }
+
 }
 
 

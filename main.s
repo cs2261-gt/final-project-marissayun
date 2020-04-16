@@ -638,27 +638,26 @@ game:
 .L67:
 	ldr	r3, .L77+28
 	ldr	r2, [r3]
-	cmp	r2, #5
-	beq	.L75
-	ldr	r3, .L77+32
-	ldr	r2, [r3]
 	cmp	r2, #0
+	bne	.L75
+	ldr	r3, .L77+32
+	ldr	r1, [r3]
+	cmp	r1, #0
 	bne	.L76
 	pop	{r4, lr}
 	bx	lr
-.L76:
+.L75:
 	mov	r2, #0
+	pop	{r4, lr}
+	str	r2, [r3]
+	b	goToWin
+.L76:
 	pop	{r4, lr}
 	str	r2, [r3]
 	b	goToLose
 .L74:
 	pop	{r4, lr}
 	b	goToPause
-.L75:
-	mov	r2, #0
-	pop	{r4, lr}
-	str	r2, [r3]
-	b	goToWin
 .L78:
 	.align	2
 .L77:
@@ -669,7 +668,7 @@ game:
 	.word	shadowOAM
 	.word	oldButtons
 	.word	buttons
-	.word	spidersCaught
+	.word	winGame
 	.word	loseGame
 	.size	game, .-game
 	.section	.text.startup,"ax",%progbits

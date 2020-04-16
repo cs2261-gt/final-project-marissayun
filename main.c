@@ -226,8 +226,8 @@ void game() {
 	//switching states
 	if (BUTTON_PRESSED(BUTTON_START)) {
 		goToPause();
-	} else if (spidersCaught == 5) { // win if you catch 5 spiders
-		spidersCaught = 0; // reset spidersCaught to 0 for when game is played again
+	} else if (winGame) { // win if you catch 5 spiders
+		winGame = 0; // reset winGame to 0 for when game is played again
         goToWin();
 	} else if (loseGame) { // if lose all of your 3 lives, you lose
 		loseGame = 0; // reset loseGame to 0 for when game is played again

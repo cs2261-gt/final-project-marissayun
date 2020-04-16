@@ -57,16 +57,18 @@ initializeGame:
 	ldr	r1, .L4+40
 	str	r3, [r1]
 	ldr	r1, .L4+44
+	str	r3, [r1]
+	ldr	r1, .L4+48
 	str	r2, [r1, #12]
 	str	r2, [r1, #16]
-	ldr	r2, .L4+48
+	ldr	r2, .L4+52
 	str	r3, [r1, #36]
 	str	r3, [r1, #28]
 	str	r3, [r1, #24]
 	str	r3, [r2, #32]
 	str	r3, [r2, #24]
 	str	r3, [r2, #36]
-	ldr	r3, .L4+52
+	ldr	r3, .L4+56
 	stm	r2, {r5, r6}
 	str	r7, [r1]
 	str	lr, [r1, #8]
@@ -94,6 +96,7 @@ initializeGame:
 	.word	spiderTimer
 	.word	seed
 	.word	loseGame
+	.word	winGame
 	.word	villager
 	.word	spider
 	.word	lives
@@ -233,30 +236,31 @@ updateVillager:
 	movne	r2, #2
 	ldr	r5, [r4, #36]
 	strne	r3, [r4, #20]
-	ldr	r3, .L39+4
+	add	r3, r5, r5, lsl #4
 	strne	r2, [r4, #24]
-	smull	r1, r2, r3, r5
-	asr	r3, r5, #31
-	rsb	r3, r3, r2, asr #3
-	add	r3, r3, r3, lsl #2
-	cmp	r5, r3, lsl #2
-	bne	.L20
+	add	r3, r3, r3, lsl #8
+	ldr	r2, .L39+4
+	ldr	r1, .L39+8
+	add	r3, r3, r3, lsl #16
+	sub	r2, r2, r3
+	cmp	r2, r1
+	bcs	.L20
 	ldr	r0, [r4, #28]
-	ldr	r3, .L39+8
+	ldr	r3, .L39+12
 	ldr	r1, [r4, #32]
 	add	r0, r0, #1
 	mov	lr, pc
 	bx	r3
 	str	r1, [r4, #28]
 .L20:
-	ldr	r3, .L39+12
-	ldr	r2, .L39+16
+	ldr	r3, .L39+16
+	ldr	r2, .L39+20
 	ldrh	r3, [r3, #48]
 	ldrh	r2, [r2]
 	ands	r3, r3, #16
 	and	r2, r2, #1
 	bne	.L21
-	ldr	r0, .L39+20
+	ldr	r0, .L39+24
 	ldrh	r1, [r0]
 	cmp	r2, #0
 	add	r2, r1, #1
@@ -269,7 +273,7 @@ updateVillager:
 	pop	{r4, r5, r6, lr}
 	bx	lr
 .L22:
-	ldr	r3, .L39+24
+	ldr	r3, .L39+28
 	ldrh	r3, [r3]
 	tst	r3, #1
 	bne	.L27
@@ -280,7 +284,7 @@ updateVillager:
 .L21:
 	cmp	r2, #0
 	beq	.L25
-	ldr	r3, .L39+24
+	ldr	r3, .L39+28
 	ldrh	r3, [r3]
 	tst	r3, #1
 	beq	.L24
@@ -298,7 +302,8 @@ updateVillager:
 	.align	2
 .L39:
 	.word	villager
-	.word	1717986919
+	.word	143165576
+	.word	286331153
 	.word	__aeabi_idivmod
 	.word	67109120
 	.word	oldButtons
@@ -335,20 +340,20 @@ updateSpider:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, r7, lr}
-	ldr	r4, .L62
+	push	{r4, r5, r6, lr}
+	ldr	r4, .L63
 	ldr	r5, [r4, #32]
 	add	r3, r5, r5, lsl #4
-	ldr	r2, .L62+4
+	ldr	r2, .L63+4
 	add	r3, r3, r3, lsl #8
-	ldr	r1, .L62+8
+	ldr	r1, .L63+8
 	add	r3, r3, r3, lsl #16
 	sub	r2, r2, r3
 	cmp	r2, r1
-	sub	sp, sp, #20
+	sub	sp, sp, #16
 	bcs	.L45
 	ldr	r0, [r4, #24]
-	ldr	r3, .L62+12
+	ldr	r3, .L63+12
 	ldr	r1, [r4, #28]
 	add	r0, r0, #1
 	mov	lr, pc
@@ -359,37 +364,46 @@ updateSpider:
 	add	r5, r5, #1
 	cmp	r3, #0
 	str	r5, [r4, #32]
-	bne	.L59
-	mov	r2, #240
-	mov	r3, #1
-	str	r2, [r4, #4]
-	str	r3, [r4, #36]
+	bne	.L60
+	mov	r2, #1
+	mov	r1, #240
+	ldr	r3, .L63+16
+	str	r2, [r4, #36]
+	str	r1, [r4, #4]
+	ldr	r2, [r3]
+.L48:
+	cmp	r2, #5
+	moveq	r0, #0
+	moveq	r1, #1
+	ldreq	r2, .L63+20
+	streq	r0, [r3]
+	streq	r1, [r2]
 .L44:
-	add	sp, sp, #20
+	add	sp, sp, #16
 	@ sp needed
-	pop	{r4, r5, r6, r7, lr}
+	pop	{r4, r5, r6, lr}
 	bx	lr
-.L59:
-	mov	r7, #0
-	ldr	r5, .L62+16
+.L60:
+	ldr	r5, .L63+24
 	ldm	r5, {r2, r3}
-	ldr	r1, [r5, #16]
+	ldr	r0, [r5, #16]
+	ldr	r1, [r5, #12]
+	str	r0, [sp, #12]
+	str	r1, [sp, #8]
 	str	r2, [sp, #4]
-	str	r1, [sp, #12]
 	str	r3, [sp]
-	str	r7, [sp, #8]
 	add	r2, r4, #12
 	ldm	r2, {r2, r3}
 	ldr	r1, [r4]
 	ldr	r0, [r4, #4]
-	ldr	r6, .L62+20
+	ldr	r6, .L63+28
 	mov	lr, pc
 	bx	r6
-	cmp	r0, r7
+	cmp	r0, #0
 	beq	.L47
 	ldr	r3, [r5, #24]
 	cmp	r3, #1
-	beq	.L60
+	beq	.L61
 .L47:
 	ldr	r3, [r5, #12]
 	ldm	r5, {r1, r2}
@@ -411,68 +425,67 @@ updateSpider:
 	ldr	r3, [r5, #24]
 	bics	r3, r3, #2
 	bne	.L49
-	ldr	r1, .L62+24
+	ldr	r1, .L63+32
 	ldr	r2, [r1]
+	ldr	r0, .L63+16
 	cmp	r2, #3
 	str	r3, [r4, #36]
-	beq	.L61
-	ldr	r0, .L62+28
+	str	r3, [r0]
+	beq	.L62
+	ldr	r0, .L63+36
 	ldr	r3, [r0]
 	add	r2, r2, #1
 	sub	r3, r3, #1
 	str	r2, [r1]
 	str	r3, [r0]
-.L51:
-	mov	r2, #0
-	ldr	r3, .L62+32
-	str	r2, [r3]
 	b	.L44
 .L49:
-	ldr	r3, .L62+36
+	ldr	r3, .L63+40
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L62+40
+	ldr	r3, .L63+44
 	smull	r2, r3, r0, r3
 	sub	r3, r3, r0, asr #31
 	add	r3, r3, r3, lsl #1
-	ldr	r2, [r4, #8]
 	sub	r0, r0, r3
+	ldr	r3, [r4, #8]
+	ldr	r2, [r4, #4]
 	add	r0, r0, r0, lsr #31
-	ldr	r3, [r4, #4]
-	add	r0, r2, r0, asr #1
-	sub	r0, r3, r0
+	add	r0, r3, r0, asr #1
+	ldr	r3, .L63+16
+	sub	r0, r2, r0
 	str	r0, [r4, #4]
-	add	sp, sp, #20
-	@ sp needed
-	pop	{r4, r5, r6, r7, lr}
-	bx	lr
-.L60:
-	ldr	r2, .L62+32
-	ldr	r3, [r2]
-	add	r3, r3, #1
-	str	r7, [r4, #36]
-	str	r3, [r2]
-	b	.L44
+	ldr	r2, [r3]
+	b	.L48
 .L61:
+	mov	r1, #0
+	ldr	r3, .L63+16
+	ldr	r2, [r3]
+	add	r2, r2, #1
+	str	r2, [r3]
+	str	r1, [r4, #36]
+	b	.L48
+.L62:
 	mov	ip, #1
-	ldr	r0, .L62+44
-	ldr	r2, .L62+28
+	ldr	r0, .L63+48
+	ldr	r2, .L63+36
 	str	r3, [r1]
 	str	ip, [r0]
 	str	r3, [r2]
-	b	.L51
-.L63:
+	b	.L44
+.L64:
 	.align	2
-.L62:
+.L63:
 	.word	spider
 	.word	143165576
 	.word	286331153
 	.word	__aeabi_idivmod
+	.word	spidersCaught
+	.word	winGame
 	.word	villager
 	.word	collision
 	.word	attacks
 	.word	lives
-	.word	spidersCaught
 	.word	rand
 	.word	1431655766
 	.word	loseGame
@@ -488,32 +501,32 @@ updateGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
-	ldr	r3, .L68
+	ldr	r3, .L69
 	mov	lr, pc
 	bx	r3
 	mov	r3, #67108864
-	ldr	r2, .L68+4
+	ldr	r2, .L69+4
 	ldrh	r2, [r2]
 	lsr	r1, r2, #1
 	strh	r2, [r3, #16]	@ movhi
 	strh	r1, [r3, #20]	@ movhi
 	bl	updateVillager
 	bl	updateSpider
-	ldr	r3, .L68+8
+	ldr	r3, .L69+8
 	ldr	r0, [r3]
-	ldr	r2, .L68+12
+	ldr	r2, .L69+12
 	add	r0, r0, #1
 	str	r0, [r3]
 	mov	lr, pc
 	bx	r2
-	ldr	r3, .L68+16
+	ldr	r3, .L69+16
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L68+20
+	ldr	r3, .L69+20
 	smull	r2, r3, r0, r3
 	sub	r3, r3, r0, asr #31
 	add	r3, r3, r3, lsl #1
-	ldr	r2, .L68+24
+	ldr	r2, .L69+24
 	sub	r0, r0, r3
 	rsb	r3, r0, r0, lsl #5
 	add	r0, r0, r3, lsl #2
@@ -522,15 +535,15 @@ updateGame:
 	cmp	r3, r0, lsl #3
 	movge	r1, #1
 	movge	r3, r1
-	ldrge	r0, .L68+28
+	ldrge	r0, .L69+28
 	addlt	r3, r3, #1
 	strge	r1, [r0, #36]
 	str	r3, [r2]
 	pop	{r4, lr}
 	bx	lr
-.L69:
+.L70:
 	.align	2
-.L68:
+.L69:
 	.word	waitForVBlank
 	.word	hOff
 	.word	seed
@@ -543,6 +556,7 @@ updateGame:
 	.comm	shadowOAM,1024,4
 	.comm	seed,4,4
 	.comm	hOff,2,2
+	.comm	winGame,4,4
 	.comm	loseGame,4,4
 	.comm	spiderTimer,4,4
 	.comm	lives,4,4

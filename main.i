@@ -2,7 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-
+# 23 "main.c"
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/ieeefp.h" 1 3
@@ -811,7 +811,7 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 3 "main.c" 2
+# 24 "main.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 1 3
 # 36 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 # 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
@@ -1222,7 +1222,7 @@ _putchar_unlocked(int _c)
 }
 # 797 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 
-# 4 "main.c" 2
+# 25 "main.c" 2
 
 # 1 "myLib.h" 1
 
@@ -1333,7 +1333,7 @@ typedef struct{
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
-# 6 "main.c" 2
+# 27 "main.c" 2
 # 1 "startbg.h" 1
 # 22 "startbg.h"
 extern const unsigned short startbgTiles[720];
@@ -1343,7 +1343,7 @@ extern const unsigned short startbgMap[1024];
 
 
 extern const unsigned short startbgPal[256];
-# 7 "main.c" 2
+# 28 "main.c" 2
 # 1 "instructions.h" 1
 # 22 "instructions.h"
 extern const unsigned short instructionsTiles[1088];
@@ -1353,7 +1353,7 @@ extern const unsigned short instructionsMap[1024];
 
 
 extern const unsigned short instructionsPal[256];
-# 8 "main.c" 2
+# 29 "main.c" 2
 # 1 "pausebg.h" 1
 # 22 "pausebg.h"
 extern const unsigned short pausebgTiles[432];
@@ -1363,7 +1363,7 @@ extern const unsigned short pausebgMap[1024];
 
 
 extern const unsigned short pausebgPal[256];
-# 9 "main.c" 2
+# 30 "main.c" 2
 # 1 "winbg.h" 1
 # 22 "winbg.h"
 extern const unsigned short winbgTiles[832];
@@ -1373,7 +1373,7 @@ extern const unsigned short winbgMap[1024];
 
 
 extern const unsigned short winbgPal[256];
-# 10 "main.c" 2
+# 31 "main.c" 2
 # 1 "losebg.h" 1
 # 22 "losebg.h"
 extern const unsigned short losebgTiles[1072];
@@ -1383,7 +1383,7 @@ extern const unsigned short losebgMap[1024];
 
 
 extern const unsigned short losebgPal[256];
-# 11 "main.c" 2
+# 32 "main.c" 2
 # 1 "gamebg.h" 1
 # 22 "gamebg.h"
 extern const unsigned short gamebgTiles[16];
@@ -1393,7 +1393,7 @@ extern const unsigned short gamebgMap[1024];
 
 
 extern const unsigned short gamebgPal[256];
-# 12 "main.c" 2
+# 33 "main.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -1428,6 +1428,7 @@ extern int spidersCaught;
 extern int attacks;
 extern int lives;
 extern int loseGame;
+extern int winGame;
 
 
 void initializeGame();
@@ -1440,7 +1441,7 @@ void updateVillager();
 void initializeSpider();
 void updateSpider();
 void spawnSpider();
-# 13 "main.c" 2
+# 34 "main.c" 2
 # 1 "furtherTrees.h" 1
 # 22 "furtherTrees.h"
 extern const unsigned short furtherTreesTiles[1856];
@@ -1450,7 +1451,7 @@ extern const unsigned short furtherTreesMap[1024];
 
 
 extern const unsigned short furtherTreesPal[256];
-# 14 "main.c" 2
+# 35 "main.c" 2
 # 1 "trees.h" 1
 # 22 "trees.h"
 extern const unsigned short treesTiles[5984];
@@ -1460,7 +1461,7 @@ extern const unsigned short treesMap[2048];
 
 
 extern const unsigned short treesPal[256];
-# 15 "main.c" 2
+# 36 "main.c" 2
 
 
 void initialize();
@@ -1654,8 +1655,8 @@ void game() {
 
  if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
   goToPause();
- } else if (spidersCaught == 5) {
-  spidersCaught = 0;
+ } else if (winGame) {
+  winGame = 0;
         goToWin();
  } else if (loseGame) {
   loseGame = 0;

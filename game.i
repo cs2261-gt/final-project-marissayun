@@ -955,6 +955,7 @@ extern int spidersCaught;
 extern int attacks;
 extern int lives;
 extern int loseGame;
+extern int winGame;
 
 
 void initializeGame();
@@ -1004,6 +1005,7 @@ int attacks;
 int lives;
 int spiderTimer;
 int loseGame;
+int winGame;
 
 
 
@@ -1040,6 +1042,7 @@ void initializeGame() {
     seed = 0;
 
     loseGame = 0;
+    winGame = 0;
 
     initializeVillager();
     initializeSpider();
@@ -1115,7 +1118,7 @@ void updateVillager() {
     }
 
 
-    if(villager.aniCounter % 20 == 0) {
+    if(villager.aniCounter % 15 == 0) {
         villager.curFrame = (villager.curFrame + 1) % villager.numFrames;
     }
 
@@ -1162,7 +1165,7 @@ void updateSpider() {
 
 
         if (collision(spider.col, spider.row, spider.width, spider.height,
-            villager.col, villager.row, villager.width * (3/4), villager.height)
+            villager.col, villager.row, villager.width, villager.height)
             && villager.aniState == SPRITENET) {
 
 
@@ -1170,7 +1173,6 @@ void updateSpider() {
 
 
             spidersCaught++;
-
 
 
 
@@ -1184,18 +1186,17 @@ void updateSpider() {
             spider.active = 0;
 
 
+            spidersCaught = 0;
+
+
             if (attacks == 3) {
                 lives = 0;
                 attacks = 0;
-                spidersCaught = 0;
                 loseGame = 1;
             } else {
                 attacks++;
                 lives--;
             }
-
-
-            spidersCaught = 0;
 
 
         } else {
@@ -1208,4 +1209,13 @@ void updateSpider() {
         spider.col = 240;
         spider.active = 1;
     }
+
+    if (spidersCaught == 5) {
+
+
+
+        spidersCaught = 0;
+        winGame = 1;
+    }
+
 }
