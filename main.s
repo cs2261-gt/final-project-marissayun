@@ -647,7 +647,7 @@ game:
 	pop	{r4, lr}
 	bx	lr
 .L76:
-	mov	r2, #1
+	mov	r2, #0
 	pop	{r4, lr}
 	str	r2, [r3]
 	b	goToLose

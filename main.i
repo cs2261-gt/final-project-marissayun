@@ -1658,7 +1658,7 @@ void game() {
   spidersCaught = 0;
         goToWin();
  } else if (loseGame) {
-  loseGame = 1;
+  loseGame = 0;
         goToLose();
  }
 

@@ -196,6 +196,7 @@ void updateSpider() {
             if (attacks == 3) { 
                 lives = 0;
                 attacks = 0; // reset attacks for next playthrough
+                spidersCaught = 0; // reset attacks for next playthrough
                 loseGame = 1;
             } else {
                 attacks++;

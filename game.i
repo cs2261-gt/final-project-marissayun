@@ -1187,6 +1187,7 @@ void updateSpider() {
             if (attacks == 3) {
                 lives = 0;
                 attacks = 0;
+                spidersCaught = 0;
                 loseGame = 1;
             } else {
                 attacks++;
