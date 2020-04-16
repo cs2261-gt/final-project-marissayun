@@ -1,3 +1,24 @@
+// M03 Comments
+// Finished: most game mechanics (gameplay works, but could be better)
+// Needs to be added: cheat, final art (backgrounds and sprites), sounds/music
+// Bugs: 
+// How to play: 
+// Start game: press START from start menu to begin game
+// Pause: press SELECT from game screen
+// Instructions: currently placeholder but press SELECT from start screen
+// Once in the game...
+// Move right (using right arrow) 
+// Objective is to catch tarantulas (by pressing A! this should trigger
+// a villager state where the net is now on the ground)
+// As of now, the timing for the tarantula catching is hard to see since
+// the final villager sprites are not yet completed
+// but basically, it's when the spider reaches the middle of the "blue zone"
+// (that's when you should press A!)
+// Win: catch 5 spiders (consecutively, score is reset if tarantula attacks you)
+// Lose: attacked by tarantula 3 times (doesn't need to be consecutive)
+// Will definitely aim to finish villager sprites by next milestone for 
+// better visualization!
+
 // for rand
 #include <stdlib.h>
 #include <stdio.h>
