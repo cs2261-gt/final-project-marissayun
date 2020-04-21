@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include "myLib.h"
 #include "game.h"
-#include "furtherTrees.h"
-#include "trees.h"
 #include "tempspritesheet.h"
+
+// sounds
+#include "catch.h"
+#include "footsteps.h"
 
 //variables
 VILLAGER villager;
@@ -21,6 +23,10 @@ int winGame;
 // Whenever villager is idle, just show whatever state villager was before (prevAniState)
 enum {SPRITERIGHT, SPRITENET, SPRITEIDLE};
 
+// sounds
+SOUND soundA;
+SOUND soundB;
+
 // Horizontal Offset
 unsigned short hOff;
 
@@ -30,6 +36,9 @@ int seed;
 OBJ_ATTR shadowOAM[128];
 
 void initializeGame() {
+    // call the two setup functions for sounds and interrupts.
+    setupSounds();
+    setupInterrupts();
     
     //load spritesheet palette and tiles
     //initialize backgrounds 
@@ -170,11 +179,15 @@ void updateSpider() {
 	if (spider.active) {
         // CASE 1: spider is caught
         // the spider is caught if it has a collision with the villager sprite 
+        // while in the net state
         // (so the entire width, includes empty area where net will be)
         // (which should match up with the timing of the spider under the net)
         if (collision(spider.col, spider.row, spider.width, spider.height,
             villager.col, villager.row, villager.width, villager.height)
             && villager.aniState == SPRITENET) { 
+
+            // catch sound
+            playSoundB(catch, 0);
 
             // spider is inactive
             spider.active = 0;
@@ -186,9 +199,10 @@ void updateSpider() {
         // the spider has a collision with the villager 
         // but not the "villager" sprite itself 
         // (so half of the villager width, doesn't include net area)
+        // doesn't matter what state since it it reaches this point
+        // an attack will happen (and the timing for the net has passed)
         } else if (collision(spider.col, spider.row, spider.width, spider.height,
-            villager.col, villager.row, villager.width / 2, villager.height)
-            && (villager.aniState == SPRITERIGHT || villager.aniState == SPRITEIDLE)) {
+            villager.col, villager.row, villager.width / 2, villager.height)) {
 
             // spider is inactive
             spider.active = 0;

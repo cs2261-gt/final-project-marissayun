@@ -1334,66 +1334,6 @@ typedef struct{
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
 # 27 "main.c" 2
-# 1 "startbg.h" 1
-# 22 "startbg.h"
-extern const unsigned short startbgTiles[720];
-
-
-extern const unsigned short startbgMap[1024];
-
-
-extern const unsigned short startbgPal[256];
-# 28 "main.c" 2
-# 1 "instructions.h" 1
-# 22 "instructions.h"
-extern const unsigned short instructionsTiles[1088];
-
-
-extern const unsigned short instructionsMap[1024];
-
-
-extern const unsigned short instructionsPal[256];
-# 29 "main.c" 2
-# 1 "pausebg.h" 1
-# 22 "pausebg.h"
-extern const unsigned short pausebgTiles[432];
-
-
-extern const unsigned short pausebgMap[1024];
-
-
-extern const unsigned short pausebgPal[256];
-# 30 "main.c" 2
-# 1 "winbg.h" 1
-# 22 "winbg.h"
-extern const unsigned short winbgTiles[832];
-
-
-extern const unsigned short winbgMap[1024];
-
-
-extern const unsigned short winbgPal[256];
-# 31 "main.c" 2
-# 1 "losebg.h" 1
-# 22 "losebg.h"
-extern const unsigned short losebgTiles[1072];
-
-
-extern const unsigned short losebgMap[1024];
-
-
-extern const unsigned short losebgPal[256];
-# 32 "main.c" 2
-# 1 "gamebg.h" 1
-# 22 "gamebg.h"
-extern const unsigned short gamebgTiles[16];
-
-
-extern const unsigned short gamebgMap[1024];
-
-
-extern const unsigned short gamebgPal[256];
-# 33 "main.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -1441,27 +1381,102 @@ void updateVillager();
 void initializeSpider();
 void updateSpider();
 void spawnSpider();
+# 28 "main.c" 2
+
+
+# 1 "startbg.h" 1
+# 22 "startbg.h"
+extern const unsigned short startbgTiles[6576];
+
+
+extern const unsigned short startbgMap[1024];
+
+
+extern const unsigned short startbgPal[256];
+# 31 "main.c" 2
+# 1 "instructions.h" 1
+# 22 "instructions.h"
+extern const unsigned short instructionsTiles[6720];
+
+
+extern const unsigned short instructionsMap[1024];
+
+
+extern const unsigned short instructionsPal[256];
+# 32 "main.c" 2
+# 1 "pausebg.h" 1
+# 22 "pausebg.h"
+extern const unsigned short pausebgTiles[5872];
+
+
+extern const unsigned short pausebgMap[1024];
+
+
+extern const unsigned short pausebgPal[256];
+# 33 "main.c" 2
+# 1 "winbg.h" 1
+# 22 "winbg.h"
+extern const unsigned short winbgTiles[832];
+
+
+extern const unsigned short winbgMap[1024];
+
+
+extern const unsigned short winbgPal[256];
 # 34 "main.c" 2
-# 1 "furtherTrees.h" 1
-# 22 "furtherTrees.h"
-extern const unsigned short furtherTreesTiles[1856];
+# 1 "losebg.h" 1
+# 22 "losebg.h"
+extern const unsigned short losebgTiles[1072];
 
 
-extern const unsigned short furtherTreesMap[1024];
+extern const unsigned short losebgMap[1024];
 
 
-extern const unsigned short furtherTreesPal[256];
+extern const unsigned short losebgPal[256];
 # 35 "main.c" 2
+# 1 "island.h" 1
+# 22 "island.h"
+extern const unsigned short islandTiles[6272];
+
+
+extern const unsigned short islandMap[1024];
+
+
+extern const unsigned short islandPal[256];
+# 36 "main.c" 2
 # 1 "trees.h" 1
 # 22 "trees.h"
-extern const unsigned short treesTiles[5984];
+extern const unsigned short treesTiles[13872];
 
 
 extern const unsigned short treesMap[2048];
 
 
 extern const unsigned short treesPal[256];
-# 36 "main.c" 2
+# 37 "main.c" 2
+
+
+# 1 "airport.h" 1
+
+
+
+
+extern const signed char airport[1366560];
+# 40 "main.c" 2
+# 1 "islandnight.h" 1
+
+
+
+
+extern const signed char islandnight[1465920];
+# 41 "main.c" 2
+# 1 "prologue.h" 1
+
+
+
+
+extern const signed char prologue[976608];
+# 42 "main.c" 2
 
 
 void initialize();
@@ -1487,6 +1502,10 @@ int state;
 
 unsigned short buttons;
 unsigned short oldButtons;
+
+
+SOUND soundA;
+SOUND soundB;
 
 int main() {
 
@@ -1545,6 +1564,10 @@ void initialize() {
 
     buttons = (*(volatile unsigned short *)0x04000130);
 
+
+ setupSounds();
+ setupInterrupts();
+
     goToStart();
 }
 
@@ -1555,13 +1578,13 @@ void goToStart() {
  (*(volatile unsigned short *)0x04000010) = 0;
 
 
- DMANow(3, startbgPal, ((unsigned short *)0x5000000), 256);
+ DMANow(3, startbgPal, ((unsigned short *)0x5000000), 512 / 2);
 
 
- DMANow(3, startbgTiles, &((charblock *)0x6000000)[0], 752);
+ DMANow(3, startbgTiles, &((charblock *)0x6000000)[0], 13152 / 2);
 
 
- DMANow(3, startbgMap, &((screenblock *)0x6000000)[31], 1024);
+ DMANow(3, startbgMap, &((screenblock *)0x6000000)[31], 2048 / 2);
 
 
 
@@ -1569,6 +1592,8 @@ void goToStart() {
  hideSprites();
  waitForVBlank();
  DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
+
+ playSoundA(airport, 1366560, 1);
 
  state = START;
 
@@ -1578,6 +1603,10 @@ void goToStart() {
 void start() {
 
  if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
+
+
+  stopSound();
+  playSoundA(islandnight, 1465920, 1);
 
 
   initializeGame();
@@ -1604,13 +1633,13 @@ void goToInstructions() {
  DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
 
- DMANow(3, instructionsPal, ((unsigned short *)0x5000000), 256);
+ DMANow(3, instructionsPal, ((unsigned short *)0x5000000), 512 / 2);
 
 
- DMANow(3, instructionsTiles, &((charblock *)0x6000000)[0], 688);
+ DMANow(3, instructionsTiles, &((charblock *)0x6000000)[0], 13440 / 2);
 
 
- DMANow(3, instructionsMap, &((screenblock *)0x6000000)[31], 1024);
+ DMANow(3, instructionsMap, &((screenblock *)0x6000000)[31], 2048 / 2);
 
  state = INSTRUCTIONS;
 }
@@ -1626,17 +1655,17 @@ void goToGame() {
  (*(unsigned short *)0x4000000) = 0 | (1<<9) | (1<<8) | (1<<12);
 
 
-    DMANow(3, furtherTreesPal, ((unsigned short *)0x5000000), 256);
+    DMANow(3, islandPal, ((unsigned short *)0x5000000), 256);
 
     (*(volatile unsigned short*)0x400000A) = ((0)<<2) | ((28)<<8) | (0<<14) | (0<<7);
 
-    DMANow(3, furtherTreesTiles, &((charblock *)0x6000000)[0], 3712 / 2);
+    DMANow(3, islandTiles, &((charblock *)0x6000000)[0], 12544 / 2);
 
-    DMANow(3, furtherTreesMap, &((screenblock *)0x6000000)[28], 2048 / 2);
+    DMANow(3, islandMap, &((screenblock *)0x6000000)[28], 2048 / 2);
 
     (*(volatile unsigned short*)0x4000008) = ((1)<<2) | ((30)<<8) | (1<<14) | (0<<7);
 
-    DMANow(3, treesTiles, &((charblock *)0x6000000)[1], 11968 / 2);
+    DMANow(3, treesTiles, &((charblock *)0x6000000)[1], 27744 / 2);
 
     DMANow(3, treesMap, &((screenblock *)0x6000000)[30], 4096 / 2);
 
@@ -1653,12 +1682,18 @@ void game() {
     DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 128*4);
 
 
- if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
+ if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+
+  pauseSound();
+
   goToPause();
  } else if (winGame) {
+  stopSound();
+  playSoundA(prologue, 976608, 1);
   winGame = 0;
         goToWin();
  } else if (loseGame) {
+  stopSound();
   loseGame = 0;
         goToLose();
  }
@@ -1680,13 +1715,13 @@ void goToPause() {
  DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
 
- DMANow(3, pausebgPal, ((unsigned short *)0x5000000), 256);
+ DMANow(3, pausebgPal, ((unsigned short *)0x5000000), 512 / 2);
 
 
- DMANow(3, pausebgTiles, &((charblock *)0x6000000)[0], 688);
+ DMANow(3, pausebgTiles, &((charblock *)0x6000000)[0], 11744 / 2);
 
 
- DMANow(3, pausebgMap, &((screenblock *)0x6000000)[31], 1024);
+ DMANow(3, pausebgMap, &((screenblock *)0x6000000)[31], 2048 / 2);
 
  state = PAUSE;
 }
@@ -1694,6 +1729,8 @@ void goToPause() {
 void pause() {
 
  if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
+
+  unpauseSound();
   goToGame();
  }
 }
@@ -1713,13 +1750,13 @@ void goToWin() {
  DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
 
- DMANow(3, winbgPal, ((unsigned short *)0x5000000), 256);
+ DMANow(3, winbgPal, ((unsigned short *)0x5000000), 512 / 2);
 
 
- DMANow(3, winbgTiles, &((charblock *)0x6000000)[0], 1808);
+ DMANow(3, winbgTiles, &((charblock *)0x6000000)[0], 1664 / 2);
 
 
- DMANow(3, winbgMap, &((screenblock *)0x6000000)[31], 1024);
+ DMANow(3, winbgMap, &((screenblock *)0x6000000)[31], 2048 / 2);
 
  state = WIN;
 }
@@ -1744,13 +1781,13 @@ void goToLose() {
  DMANow(3, shadowOAM, ((OBJ_ATTR*)(0x7000000)), 512);
 
 
- DMANow(3, losebgPal, ((unsigned short *)0x5000000), 256);
+ DMANow(3, losebgPal, ((unsigned short *)0x5000000), 512 / 2);
 
 
- DMANow(3, losebgTiles, &((charblock *)0x6000000)[0], 2592);
+ DMANow(3, losebgTiles, &((charblock *)0x6000000)[0], 2144 / 2);
 
 
- DMANow(3, losebgMap, &((screenblock *)0x6000000)[31], 1024);
+ DMANow(3, losebgMap, &((screenblock *)0x6000000)[31], 2048 / 2);
 
  state = LOSE;
 }

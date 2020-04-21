@@ -956,6 +956,8 @@ extern int attacks;
 extern int lives;
 extern int loseGame;
 extern int winGame;
+extern SOUND soundA;
+extern SOUND soundB;
 
 
 void initializeGame();
@@ -969,33 +971,29 @@ void initializeSpider();
 void updateSpider();
 void spawnSpider();
 # 4 "game.c" 2
-# 1 "furtherTrees.h" 1
-# 22 "furtherTrees.h"
-extern const unsigned short furtherTreesTiles[1856];
-
-
-extern const unsigned short furtherTreesMap[1024];
-
-
-extern const unsigned short furtherTreesPal[256];
-# 5 "game.c" 2
-# 1 "trees.h" 1
-# 22 "trees.h"
-extern const unsigned short treesTiles[5984];
-
-
-extern const unsigned short treesMap[2048];
-
-
-extern const unsigned short treesPal[256];
-# 6 "game.c" 2
 # 1 "tempspritesheet.h" 1
 # 21 "tempspritesheet.h"
 extern const unsigned short tempspritesheetTiles[16384];
 
 
 extern const unsigned short tempspritesheetPal[256];
-# 7 "game.c" 2
+# 5 "game.c" 2
+
+
+# 1 "catch.h" 1
+
+
+
+
+extern const signed char catch[5557];
+# 8 "game.c" 2
+# 1 "footsteps.h" 1
+
+
+
+
+extern const signed char footsteps[221206];
+# 9 "game.c" 2
 
 
 VILLAGER villager;
@@ -1014,6 +1012,10 @@ int winGame;
 enum {SPRITERIGHT, SPRITENET, SPRITEIDLE};
 
 
+SOUND soundA;
+SOUND soundB;
+
+
 unsigned short hOff;
 
 
@@ -1022,6 +1024,9 @@ int seed;
 OBJ_ATTR shadowOAM[128];
 
 void initializeGame() {
+
+    setupSounds();
+    setupInterrupts();
 
 
 
@@ -1144,6 +1149,11 @@ void updateVillager() {
         villager.aniCounter++;
     }
 
+    if (villager.aniState == SPRITERIGHT) {
+
+        playSoundB(footsteps, 1);
+    }
+
 }
 
 void spawnSpider() {
@@ -1164,9 +1174,13 @@ void updateSpider() {
 
 
 
+
         if (collision(spider.col, spider.row, spider.width, spider.height,
             villager.col, villager.row, villager.width, villager.height)
             && villager.aniState == SPRITENET) {
+
+
+            playSoundB(catch, 0);
 
 
             spider.active = 0;
@@ -1178,9 +1192,10 @@ void updateSpider() {
 
 
 
+
+
         } else if (collision(spider.col, spider.row, spider.width, spider.height,
-            villager.col, villager.row, villager.width / 2, villager.height)
-            && (villager.aniState == SPRITERIGHT || villager.aniState == SPRITEIDLE)) {
+            villager.col, villager.row, villager.width / 2, villager.height)) {
 
 
             spider.active = 0;
