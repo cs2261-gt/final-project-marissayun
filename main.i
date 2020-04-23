@@ -2,7 +2,7 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-# 23 "main.c"
+# 22 "main.c"
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 1 3
 # 10 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/machine/ieeefp.h" 1 3
@@ -811,7 +811,7 @@ extern long double _strtold_r (struct _reent *, const char *restrict, char **res
 extern long double strtold (const char *restrict, char **restrict);
 # 336 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdlib.h" 3
 
-# 24 "main.c" 2
+# 23 "main.c" 2
 # 1 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 1 3
 # 36 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 # 1 "/opt/devkitpro/devkitARM/lib/gcc/arm-none-eabi/9.1.0/include/stddef.h" 1 3 4
@@ -1222,7 +1222,7 @@ _putchar_unlocked(int _c)
 }
 # 797 "/opt/devkitpro/devkitARM/arm-none-eabi/include/stdio.h" 3
 
-# 25 "main.c" 2
+# 24 "main.c" 2
 
 # 1 "myLib.h" 1
 
@@ -1333,7 +1333,7 @@ typedef struct{
 
 
 int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, int widthB, int heightB);
-# 27 "main.c" 2
+# 26 "main.c" 2
 # 1 "game.h" 1
 
 typedef struct {
@@ -1381,7 +1381,7 @@ void updateVillager();
 void initializeSpider();
 void updateSpider();
 void spawnSpider();
-# 28 "main.c" 2
+# 27 "main.c" 2
 
 
 # 1 "startbg.h" 1
@@ -1393,17 +1393,17 @@ extern const unsigned short startbgMap[1024];
 
 
 extern const unsigned short startbgPal[256];
-# 31 "main.c" 2
+# 30 "main.c" 2
 # 1 "instructions.h" 1
 # 22 "instructions.h"
-extern const unsigned short instructionsTiles[6720];
+extern const unsigned short instructionsTiles[6976];
 
 
 extern const unsigned short instructionsMap[1024];
 
 
 extern const unsigned short instructionsPal[256];
-# 32 "main.c" 2
+# 31 "main.c" 2
 # 1 "pausebg.h" 1
 # 22 "pausebg.h"
 extern const unsigned short pausebgTiles[5872];
@@ -1413,27 +1413,27 @@ extern const unsigned short pausebgMap[1024];
 
 
 extern const unsigned short pausebgPal[256];
-# 33 "main.c" 2
+# 32 "main.c" 2
 # 1 "winbg.h" 1
 # 22 "winbg.h"
-extern const unsigned short winbgTiles[832];
+extern const unsigned short winbgTiles[4736];
 
 
 extern const unsigned short winbgMap[1024];
 
 
 extern const unsigned short winbgPal[256];
-# 34 "main.c" 2
+# 33 "main.c" 2
 # 1 "losebg.h" 1
 # 22 "losebg.h"
-extern const unsigned short losebgTiles[1072];
+extern const unsigned short losebgTiles[4112];
 
 
 extern const unsigned short losebgMap[1024];
 
 
 extern const unsigned short losebgPal[256];
-# 35 "main.c" 2
+# 34 "main.c" 2
 # 1 "island.h" 1
 # 22 "island.h"
 extern const unsigned short islandTiles[6272];
@@ -1443,7 +1443,7 @@ extern const unsigned short islandMap[1024];
 
 
 extern const unsigned short islandPal[256];
-# 36 "main.c" 2
+# 35 "main.c" 2
 # 1 "trees.h" 1
 # 22 "trees.h"
 extern const unsigned short treesTiles[13872];
@@ -1453,7 +1453,7 @@ extern const unsigned short treesMap[2048];
 
 
 extern const unsigned short treesPal[256];
-# 37 "main.c" 2
+# 36 "main.c" 2
 
 
 # 1 "airport.h" 1
@@ -1462,21 +1462,21 @@ extern const unsigned short treesPal[256];
 
 
 extern const signed char airport[1366560];
-# 40 "main.c" 2
+# 39 "main.c" 2
 # 1 "islandnight.h" 1
 
 
 
 
 extern const signed char islandnight[1465920];
-# 41 "main.c" 2
+# 40 "main.c" 2
 # 1 "prologue.h" 1
 
 
 
 
 extern const signed char prologue[976608];
-# 42 "main.c" 2
+# 41 "main.c" 2
 
 
 void initialize();
@@ -1608,7 +1608,6 @@ void start() {
   stopSound();
   playSoundA(islandnight, 1465920, 1);
 
-
   initializeGame();
   goToGame();
  }
@@ -1636,7 +1635,7 @@ void goToInstructions() {
  DMANow(3, instructionsPal, ((unsigned short *)0x5000000), 512 / 2);
 
 
- DMANow(3, instructionsTiles, &((charblock *)0x6000000)[0], 13440 / 2);
+ DMANow(3, instructionsTiles, &((charblock *)0x6000000)[0], 13952 / 2);
 
 
  DMANow(3, instructionsMap, &((screenblock *)0x6000000)[31], 2048 / 2);
@@ -1753,7 +1752,7 @@ void goToWin() {
  DMANow(3, winbgPal, ((unsigned short *)0x5000000), 512 / 2);
 
 
- DMANow(3, winbgTiles, &((charblock *)0x6000000)[0], 1664 / 2);
+ DMANow(3, winbgTiles, &((charblock *)0x6000000)[0], 9472 / 2);
 
 
  DMANow(3, winbgMap, &((screenblock *)0x6000000)[31], 2048 / 2);
@@ -1784,7 +1783,7 @@ void goToLose() {
  DMANow(3, losebgPal, ((unsigned short *)0x5000000), 512 / 2);
 
 
- DMANow(3, losebgTiles, &((charblock *)0x6000000)[0], 2144 / 2);
+ DMANow(3, losebgTiles, &((charblock *)0x6000000)[0], 8224 / 2);
 
 
  DMANow(3, losebgMap, &((screenblock *)0x6000000)[31], 2048 / 2);

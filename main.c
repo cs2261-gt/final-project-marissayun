@@ -1,23 +1,22 @@
-// M03 Comments
-// Finished: most game mechanics (gameplay works, but could be better)
-// Needs to be added: cheat, final art (backgrounds and sprites), sounds/music
-// Bugs: 
+// M04 Comments
+// Finished: game mechanics, art/backgrounds (but may end up changing/improving some art
+// if time permits)
+// Needs to be added: cheat, possibly more sounds/music, 
+// a visual representation of the score and lives left
+// attempted to add catching sound or footsteps as soundB but ran into some issues so
+// will either leave out or add in for the final submission
+// Bugs: none that I have found
 // How to play: 
 // Start game: press START from start menu to begin game
 // Pause: press SELECT from game screen
-// Instructions: currently placeholder but press SELECT from start screen
+// Instructions: press SELECT from start screen, press again to go back to start screen
 // Once in the game...
 // Move right (using right arrow) 
 // Objective is to catch tarantulas (by pressing A! this should trigger
 // a villager state where the net is now on the ground)
-// As of now, the timing for the tarantula catching is hard to see since
-// the final villager sprites are not yet completed
-// but basically, it's when the spider reaches the middle of the "blue zone"
-// (that's when you should press A!)
+// Timing for net catching and attacks should work now 
 // Win: catch 5 spiders (consecutively, score is reset if tarantula attacks you)
 // Lose: attacked by tarantula 3 times (doesn't need to be consecutive)
-// Will definitely aim to finish villager sprites by next milestone for 
-// better visualization!
 
 // for rand
 #include <stdlib.h>
@@ -168,8 +167,7 @@ void start() {
 
         // start the game!
 		stopSound();
-		playSoundA(islandnight, ISLANDNIGHTLEN, 1); // play gamSong (loops)
-		//playSoundB(navi, NAVILEN, 0); // play navi sound (does not loop)
+		playSoundA(islandnight, ISLANDNIGHTLEN, 1); 
 
 		initializeGame();
 		goToGame();

@@ -956,8 +956,6 @@ extern int attacks;
 extern int lives;
 extern int loseGame;
 extern int winGame;
-extern SOUND soundA;
-extern SOUND soundB;
 
 
 void initializeGame();
@@ -1004,16 +1002,13 @@ int lives;
 int spiderTimer;
 int loseGame;
 int winGame;
+int frameCounter;
 
 
 
 
 
 enum {SPRITERIGHT, SPRITENET, SPRITEIDLE};
-
-
-SOUND soundA;
-SOUND soundB;
 
 
 unsigned short hOff;
@@ -1024,9 +1019,6 @@ int seed;
 OBJ_ATTR shadowOAM[128];
 
 void initializeGame() {
-
-    setupSounds();
-    setupInterrupts();
 
 
 
@@ -1048,6 +1040,8 @@ void initializeGame() {
 
     loseGame = 0;
     winGame = 0;
+
+    frameCounter = 0;
 
     initializeVillager();
     initializeSpider();
@@ -1100,6 +1094,7 @@ void updateGame() {
  }
 
  spiderTimer++;
+
 }
 
 void drawGame() {
@@ -1149,11 +1144,6 @@ void updateVillager() {
         villager.aniCounter++;
     }
 
-    if (villager.aniState == SPRITERIGHT) {
-
-        playSoundB(footsteps, 1);
-    }
-
 }
 
 void spawnSpider() {
@@ -1180,7 +1170,7 @@ void updateSpider() {
             && villager.aniState == SPRITENET) {
 
 
-            playSoundB(catch, 0);
+
 
 
             spider.active = 0;
@@ -1203,14 +1193,14 @@ void updateSpider() {
 
             spidersCaught = 0;
 
+            attacks++;
+            lives--;
+
 
             if (attacks == 3) {
                 lives = 0;
                 attacks = 0;
                 loseGame = 1;
-            } else {
-                attacks++;
-                lives--;
             }
 
 
@@ -1219,7 +1209,9 @@ void updateSpider() {
             spider.col -= (rand() % 3 / 2) + spider.cdel;
         }
 
- } else {
+ }
+
+    if (!spider.active) {
 
         spider.col = 240;
         spider.active = 1;

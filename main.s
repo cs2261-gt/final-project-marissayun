@@ -198,7 +198,7 @@ goToInstructions:
 	ldr	r1, .L16+16
 	mov	lr, pc
 	bx	r4
-	mov	r3, #6720
+	mov	r3, #6976
 	mov	r2, #100663296
 	mov	r0, #3
 	ldr	r1, .L16+20
@@ -534,7 +534,7 @@ goToWin:
 	ldr	r1, .L60+16
 	mov	lr, pc
 	bx	r4
-	mov	r3, #832
+	mov	r3, #4736
 	mov	r2, #100663296
 	mov	r0, #3
 	ldr	r1, .L60+20
@@ -622,20 +622,20 @@ goToLose:
 	ldr	r1, .L68+16
 	mov	lr, pc
 	bx	r4
-	mov	r3, #1072
 	mov	r2, #100663296
 	mov	r0, #3
-	ldr	r1, .L68+20
+	ldr	r3, .L68+20
+	ldr	r1, .L68+24
 	mov	lr, pc
 	bx	r4
 	mov	r3, #1024
-	ldr	r2, .L68+24
+	ldr	r2, .L68+28
 	mov	r0, #3
-	ldr	r1, .L68+28
+	ldr	r1, .L68+32
 	mov	lr, pc
 	bx	r4
 	mov	r2, #5
-	ldr	r3, .L68+32
+	ldr	r3, .L68+36
 	pop	{r4, lr}
 	str	r2, [r3]
 	bx	lr
@@ -647,6 +647,7 @@ goToLose:
 	.word	DMANow
 	.word	shadowOAM
 	.word	losebgPal
+	.word	4112
 	.word	losebgTiles
 	.word	100726784
 	.word	losebgMap

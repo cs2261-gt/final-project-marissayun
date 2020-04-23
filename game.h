@@ -32,8 +32,6 @@ extern int attacks;
 extern int lives;
 extern int loseGame;
 extern int winGame;
-extern SOUND soundA;
-extern SOUND soundB;
 
 //game prototypes
 void initializeGame();

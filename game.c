@@ -16,16 +16,13 @@ int lives;
 int spiderTimer;
 int loseGame;
 int winGame;
+int frameCounter;
 // States used for villager.aniState
 // SPRITERIGHT is default walking right (since can only move right)
 // SPRITENET is one anistate where the net is making contact with the ground
 // Idle does not have an actual image associated with it;
 // Whenever villager is idle, just show whatever state villager was before (prevAniState)
 enum {SPRITERIGHT, SPRITENET, SPRITEIDLE};
-
-// sounds
-SOUND soundA;
-SOUND soundB;
 
 // Horizontal Offset
 unsigned short hOff;
@@ -36,9 +33,6 @@ int seed;
 OBJ_ATTR shadowOAM[128];
 
 void initializeGame() {
-    // call the two setup functions for sounds and interrupts.
-    setupSounds();
-    setupInterrupts();
     
     //load spritesheet palette and tiles
     //initialize backgrounds 
@@ -60,6 +54,8 @@ void initializeGame() {
 
     loseGame = 0;
     winGame = 0;
+
+    frameCounter = 0;
 
     initializeVillager();
     initializeSpider();
@@ -112,6 +108,7 @@ void updateGame() {
 	}
 
 	spiderTimer++;
+    
 }
 
 void drawGame() {
@@ -187,7 +184,7 @@ void updateSpider() {
             && villager.aniState == SPRITENET) { 
 
             // catch sound
-            playSoundB(catch, 0);
+            //playSoundB(catch, 0);
 
             // spider is inactive
             spider.active = 0;
@@ -210,15 +207,15 @@ void updateSpider() {
             // resets score to 0 after an attack
             spidersCaught = 0;
 
+            attacks++;
+            lives--;
+
             // update attacks & check for loseGame
             if (attacks == 3) { 
                 lives = 0;
                 attacks = 0; // reset attacks for next playthrough
                 loseGame = 1;
-            } else {
-                attacks++;
-                lives--;
-            }
+            } 
 
         // CASE 3: no collision yet, spider moving left
         } else {
@@ -226,8 +223,10 @@ void updateSpider() {
             spider.col -= (rand() % 3 / 2) + spider.cdel; // spider random speed
         }
 
-	} else {
-        // if not active, make it hidden and reactivate it
+	}
+
+    if (!spider.active) {
+        // if not active, make it hidden and reactivate it after 200 frames
         spider.col = SCREENWIDTH; // hide it again
         spider.active = 1;
     }
