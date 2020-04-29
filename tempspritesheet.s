@@ -724,6 +724,38 @@ tempspritesheetTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	-30720
+	.short	8840
+	.short	-21888
+	.short	-22390
+	.short	-8832
+	.short	-30547
+	.short	-21880
+	.short	-29987
+	.short	-30584
+	.short	-8790
+	.short	-30584
+	.short	-8790
+	.short	-30584
+	.short	-21848
+	.short	-30584
+	.short	-22392
+	.short	-30686
+	.short	136
+	.short	-21878
+	.short	2184
+	.short	-8824
+	.short	2218
+	.short	-9560
+	.short	-29987
+	.short	-21843
+	.short	-30550
+	.short	-21843
+	.short	-30550
+	.short	-21846
+	.short	-30584
+	.short	-30038
+	.short	-30584
 	.short	0
 	.short	0
 	.short	0
@@ -732,8 +764,14 @@ tempspritesheetTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	4368
 	.short	0
 	.short	0
+	.short	4353
+	.short	272
+	.short	4368
+	.short	4097
+	.short	4369
 	.short	0
 	.short	0
 	.short	0
@@ -743,51 +781,13 @@ tempspritesheetTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	17
+	.short	4113
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	273
+	.short	272
+	.short	4369
+	.short	4097
 	.short	0
 	.short	0
 	.short	0
@@ -1236,68 +1236,68 @@ tempspritesheetTiles:
 	.short	0
 	.short	0
 	.short	0
+	.short	-30592
+	.short	-22392
+	.short	-30720
+	.short	-30584
+	.short	0
+	.short	-30584
+	.short	0
+	.short	-30584
+	.short	0
+	.short	-30592
+	.short	0
+	.short	-30720
+	.short	0
+	.short	-30720
+	.short	0
+	.short	-32768
+	.short	-30038
+	.short	2184
+	.short	-30584
+	.short	136
+	.short	-30584
+	.short	0
+	.short	-30584
+	.short	0
+	.short	2184
+	.short	0
+	.short	136
+	.short	0
+	.short	136
+	.short	0
+	.short	8
+	.short	0
+	.short	0
+	.short	4369
+	.short	4368
+	.short	4369
+	.short	1
+	.short	5905
+	.short	1
+	.short	4369
+	.short	4096
+	.short	4352
+	.short	4096
+	.short	256
+	.short	4096
 	.short	0
 	.short	0
 	.short	0
+	.short	4369
 	.short	0
+	.short	4369
+	.short	273
+	.short	4465
+	.short	4096
+	.short	4369
 	.short	0
+	.short	17
+	.short	4097
+	.short	16
+	.short	1
 	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
-	.short	0
+	.short	1
 	.short	0
 	.short	0
 	.short	0

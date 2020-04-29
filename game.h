@@ -2,7 +2,6 @@
 typedef struct {
 	int row;
 	int col;
-    int cdel;
 	int width;
     int height;
     int prevAniState;
@@ -10,8 +9,8 @@ typedef struct {
     int curFrame;
     int numFrames;
     int aniCounter;
-    int worldRow;
-    int worldCol;
+    int rdel;
+    int gravity;
 } VILLAGER;
 
 // spider struct
@@ -28,12 +27,38 @@ typedef struct {
     int active;
 } SPIDER;
 
+// lives struct
+typedef struct {
+	int row;
+	int col;
+	int width;
+    int height;
+    int active;
+    int aniState;
+    int curFrame;
+} LIVES;
+
+// CAUGHT struct
+typedef struct {
+	int row;
+	int col;
+	int width;
+    int height;
+    int active;
+    int aniState;
+    int curFrame;
+} CAUGHT;
+
 //variables
 extern int spidersCaught;
 extern int attacks;
-extern int lives;
+extern int numLives;
 extern int loseGame;
 extern int winGame;
+
+//constants
+#define LIVESCOUNT 3
+#define MAXCAUGHT 5
 
 //game prototypes
 void initializeGame();
@@ -45,4 +70,7 @@ void updateVillager();
 //spider prototypes
 void initializeSpider();
 void updateSpider();
-void spawnSpider();
+//lives prototypes
+void initializeLives();
+//caught prototypes
+void initializeCaught();

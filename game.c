@@ -10,23 +10,26 @@
 //variables
 VILLAGER villager;
 SPIDER spider;
+LIVES lives[LIVESCOUNT];
+CAUGHT caught[MAXCAUGHT];
 int spidersCaught;
 int attacks;
-int lives;
+int numLives;
 int spiderTimer;
 int loseGame;
 int winGame;
 int frameCounter;
+int jump;
 // States used for villager.aniState
 // SPRITERIGHT is default walking right (since can only move right)
 // SPRITENET is one anistate where the net is making contact with the ground
 // Idle does not have an actual image associated with it;
 // Whenever villager is idle, just show whatever state villager was before (prevAniState)
 enum {SPRITERIGHT, SPRITENET, SPRITEJUMP, SPRITEIDLE};
-// #define GRAVITY 100
-// #define JUMPPOWER 1500
+
+// gravity
 // #define SHIFTUP(num) ((num) << 8)
-// #define SHIFTDOWN(num) ((num) >> 8)
+#define SHIFTDOWN(num) ((num) >> 8)
 
 // Horizontal Offset
 unsigned short hOff;
@@ -51,11 +54,12 @@ void initializeGame() {
     
     hOff = 0;
     vOff = 0;
+    jump = 0;
 
     // initialize variables
     spidersCaught = 0;
     attacks = 0;
-    lives = 3;
+    numLives = 3;
     spiderTimer = 0;
     seed = 0;
 
@@ -66,20 +70,21 @@ void initializeGame() {
 
     initializeVillager();
     initializeSpider();
+    initializeLives();
+    initializeCaught();
 }
 
 void initializeVillager() {
     villager.width = 64;
     villager.height = 64;
-    villager.cdel = 1;
     villager.col = 0 + (villager.width / 2);
 	villager.row = SCREENHEIGHT - (villager.height / 2) - 50; // aligned with ground
     villager.aniCounter = 0; 
     villager.curFrame = 0;
     villager.numFrames = 3; // 3 animation frames
 	villager.aniState = SPRITERIGHT; 
-    // villager.worldRow = SHIFTUP(SCREENHEIGHT / 2 + vOff);
-    // villager.worldCol = SCREENWIDTH / 2 - villager.height / 2 + hOff;
+    villager.rdel = 0;
+    villager.gravity = 0;
 }
 
 void initializeSpider() {
@@ -95,6 +100,30 @@ void initializeSpider() {
     spider.active = 0;
 }
 
+void initializeLives() {
+    for (int i = 0; i < LIVESCOUNT; i++) {
+        lives[i].width = 16;
+        lives[i].height = 16;
+        lives[i].col = 60 - (20 * i);
+        lives[i].row = 144;
+        lives[i].active = 1;
+        lives[i].curFrame = 0; // row
+        lives[i].aniState = 14; // col
+    }
+}
+
+void initializeCaught() {
+    for (int i = 0; i < MAXCAUGHT; i++) {
+        caught[i].width = 16;
+        caught[i].height = 16;
+        caught[i].col = 135 + (20 * i);
+        caught[i].row = 10;
+        caught[i].active = 0;
+        caught[i].curFrame = 0; // row
+        caught[i].aniState = 15; // col
+    }
+}
+
 // update game each frame
 void updateGame() {
     waitForVBlank();
@@ -108,15 +137,6 @@ void updateGame() {
 
     seed++;
     srand(seed);
-
-    if (spiderTimer >= (rand() % 3) * 5000) { // spider random spawn 
-
-        spiderTimer = 0;
-		spawnSpider();
-		
-	}
-
-	spiderTimer++;
     
 }
 
@@ -126,10 +146,33 @@ void drawGame() {
     shadowOAM[0].attr1 = villager.col | ATTR1_LARGE;
     shadowOAM[0].attr2 = ATTR2_TILEID(villager.aniState * 8, villager.curFrame * 8);
 
-    //set up spider sprite attributes
+    // set up spider sprite attributes
     shadowOAM[5].attr0 = spider.row | ATTR0_4BPP | ATTR0_SQUARE;
     shadowOAM[5].attr1 = spider.col | ATTR1_MEDIUM;
     shadowOAM[5].attr2 = ATTR2_TILEID(spider.aniState * 4, spider.curFrame * 4);
+
+    // set up lives sprite attributes
+    for (int i = 0; i < LIVESCOUNT; i++) {
+        if (lives[i].active) {
+            shadowOAM[8 + i].attr0 = lives[i].row | ATTR0_4BPP | ATTR0_SQUARE;
+            shadowOAM[8 + i].attr1 = lives[i].col | ATTR1_SMALL;
+            shadowOAM[8 + i].attr2 = ATTR2_TILEID(lives[i].aniState * 2, lives[i].curFrame * 2);
+        } else {
+            shadowOAM[8 + i].attr0 = ATTR0_HIDE;
+        }
+    } 
+
+    // set up caught sprite attributes
+    for (int i = 0; i < MAXCAUGHT; i++) {
+        if (caught[i].active) {
+            shadowOAM[11 + i].attr0 = caught[i].row | ATTR0_4BPP | ATTR0_SQUARE;
+            shadowOAM[11 + i].attr1 = caught[i].col | ATTR1_SMALL;
+            shadowOAM[11 + i].attr2 = ATTR2_TILEID(caught[i].aniState * 2, caught[i].curFrame * 2);
+        } else {
+            shadowOAM[11 + i].attr0 = ATTR0_HIDE;
+        }
+    } 
+    
 }
 
 void updateVillager() {
@@ -152,23 +195,31 @@ void updateVillager() {
         hOff++;
     }
 
-    if(BUTTON_PRESSED(BUTTON_A)) {
+    if (BUTTON_PRESSED(BUTTON_A)) {
         villager.aniState = SPRITENET;
     }
 
-    if(BUTTON_PRESSED(BUTTON_B)) {
-        villager.row = SCREENHEIGHT - (villager.height / 2) - 70;
+    if (BUTTON_PRESSED(BUTTON_B)) {
+        villager.rdel = -10;
+        villager.gravity = SHIFTDOWN(260);
+        villager.row--;
         villager.aniState = SPRITEJUMP;
+        jump = 1;
     }
 
-    if (frameCounter >= 20) {
-        frameCounter = 0;
-        villager.row = SCREENHEIGHT - (villager.height / 2) - 50;
-        villager.aniState = SPRITERIGHT;
+    if (villager.row == (SCREENHEIGHT - (villager.height / 2) - 50)) {
+        jump = 0;
     }
 
-    if (villager.row == SCREENHEIGHT - (villager.height / 2) - 70) {
-        frameCounter++;
+    if (villager.row < (SCREENHEIGHT - (villager.height / 2) - 50) 
+        && villager.row >= 0 - villager.height) {
+        villager.rdel += villager.gravity;
+        villager.row += villager.rdel;
+        if (villager.row < 0) {
+            villager.row = 0;
+        }
+    } else {
+        villager.row = (SCREENHEIGHT - (villager.height / 2) - 50);
     }
 
     // If the villager aniState is idle (thus no key is held), 
@@ -182,10 +233,6 @@ void updateVillager() {
         villager.aniCounter++;
     }
 
-}
-
-void spawnSpider() {
-    spider.active = 1;
 }
 
 void updateSpider() {
@@ -216,6 +263,14 @@ void updateSpider() {
             // update the score
             spidersCaught++;
 
+            // set a caught sprite as active
+            for (int i = 0; i < MAXCAUGHT; i++) {
+                if (!caught[i].active) {
+                    caught[i].active = 1;
+                    break;
+                }
+            }
+
         // CASE 2: spider attacks villager
         // the spider has a collision with the villager 
         // but not the "villager" sprite itself 
@@ -223,8 +278,7 @@ void updateSpider() {
         // doesn't matter what state since it it reaches this point
         // an attack will happen (and the timing for the net has passed)
         } else if (collision(spider.col, spider.row, spider.width, spider.height,
-            villager.col, villager.row, villager.width / 2, villager.height)
-            && villager.row != (SCREENHEIGHT - (villager.height / 2) - 70)) {
+            villager.col, villager.row, villager.width / 2, villager.height)) {
 
             // spider is inactive
             spider.active = 0;
@@ -233,11 +287,20 @@ void updateSpider() {
             spidersCaught = 0;
 
             attacks++;
-            lives--;
+
+            // lose a life 
+            numLives--;
+            // set a life inactive
+            for (int i = 0; i < LIVESCOUNT; i++) {
+                if (lives[i].active) {
+                    lives[i].active = 0;
+                    break;
+                }
+            }
 
             // update attacks & check for loseGame
             if (attacks == 3) { 
-                lives = 0;
+                numLives = 0;
                 attacks = 0; // reset attacks for next playthrough
                 loseGame = 1;
             } 
@@ -246,9 +309,13 @@ void updateSpider() {
         } else {
             // move spider left
             spider.col -= (rand() % 3 / 2) + spider.cdel; // spider random speed
-        }
 
-	}
+            if (spider.col <= 0) {
+                spider.active = 0;
+            }
+        }
+        
+	} 
 
     if (!spider.active) {
         // if not active, make it hidden and reactivate it after 200 frames
@@ -265,6 +332,7 @@ void updateSpider() {
     }
 
 }
+
 
 
 

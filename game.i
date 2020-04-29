@@ -926,7 +926,6 @@ int collision(int colA, int rowA, int widthA, int heightA, int colB, int rowB, i
 typedef struct {
  int row;
  int col;
-    int cdel;
  int width;
     int height;
     int prevAniState;
@@ -934,8 +933,8 @@ typedef struct {
     int curFrame;
     int numFrames;
     int aniCounter;
-    int worldRow;
-    int worldCol;
+    int rdel;
+    int gravity;
 } VILLAGER;
 
 
@@ -953,11 +952,37 @@ typedef struct {
 } SPIDER;
 
 
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int active;
+    int aniState;
+    int curFrame;
+} LIVES;
+
+
+typedef struct {
+ int row;
+ int col;
+ int width;
+    int height;
+    int active;
+    int aniState;
+    int curFrame;
+} CAUGHT;
+
+
 extern int spidersCaught;
 extern int attacks;
-extern int lives;
+extern int numLives;
 extern int loseGame;
 extern int winGame;
+
+
+
+
 
 
 void initializeGame();
@@ -969,7 +994,10 @@ void updateVillager();
 
 void initializeSpider();
 void updateSpider();
-void spawnSpider();
+
+void initializeLives();
+
+void initializeCaught();
 # 4 "game.c" 2
 # 1 "tempspritesheet.h" 1
 # 21 "tempspritesheet.h"
@@ -998,13 +1026,16 @@ extern const signed char footsteps[221206];
 
 VILLAGER villager;
 SPIDER spider;
+LIVES lives[3];
+CAUGHT caught[5];
 int spidersCaught;
 int attacks;
-int lives;
+int numLives;
 int spiderTimer;
 int loseGame;
 int winGame;
 int frameCounter;
+int jump;
 
 
 
@@ -1039,11 +1070,12 @@ void initializeGame() {
 
     hOff = 0;
     vOff = 0;
+    jump = 0;
 
 
     spidersCaught = 0;
     attacks = 0;
-    lives = 3;
+    numLives = 3;
     spiderTimer = 0;
     seed = 0;
 
@@ -1054,20 +1086,21 @@ void initializeGame() {
 
     initializeVillager();
     initializeSpider();
+    initializeLives();
+    initializeCaught();
 }
 
 void initializeVillager() {
     villager.width = 64;
     villager.height = 64;
-    villager.cdel = 1;
     villager.col = 0 + (villager.width / 2);
  villager.row = 160 - (villager.height / 2) - 50;
     villager.aniCounter = 0;
     villager.curFrame = 0;
     villager.numFrames = 3;
  villager.aniState = SPRITERIGHT;
-
-
+    villager.rdel = 0;
+    villager.gravity = 0;
 }
 
 void initializeSpider() {
@@ -1081,6 +1114,30 @@ void initializeSpider() {
     spider.numFrames = 3;
  spider.aniState = 6;
     spider.active = 0;
+}
+
+void initializeLives() {
+    for (int i = 0; i < 3; i++) {
+        lives[i].width = 16;
+        lives[i].height = 16;
+        lives[i].col = 60 - (20 * i);
+        lives[i].row = 144;
+        lives[i].active = 1;
+        lives[i].curFrame = 0;
+        lives[i].aniState = 14;
+    }
+}
+
+void initializeCaught() {
+    for (int i = 0; i < 5; i++) {
+        caught[i].width = 16;
+        caught[i].height = 16;
+        caught[i].col = 135 + (20 * i);
+        caught[i].row = 10;
+        caught[i].active = 0;
+        caught[i].curFrame = 0;
+        caught[i].aniState = 15;
+    }
 }
 
 
@@ -1097,15 +1154,6 @@ void updateGame() {
     seed++;
     srand(seed);
 
-    if (spiderTimer >= (rand() % 3) * 5000) {
-
-        spiderTimer = 0;
-  spawnSpider();
-
- }
-
- spiderTimer++;
-
 }
 
 void drawGame() {
@@ -1118,6 +1166,29 @@ void drawGame() {
     shadowOAM[5].attr0 = spider.row | (0<<13) | (0<<14);
     shadowOAM[5].attr1 = spider.col | (2<<14);
     shadowOAM[5].attr2 = ((spider.curFrame * 4)*32+(spider.aniState * 4));
+
+
+    for (int i = 0; i < 3; i++) {
+        if (lives[i].active) {
+            shadowOAM[8 + i].attr0 = lives[i].row | (0<<13) | (0<<14);
+            shadowOAM[8 + i].attr1 = lives[i].col | (1<<14);
+            shadowOAM[8 + i].attr2 = ((lives[i].curFrame * 2)*32+(lives[i].aniState * 2));
+        } else {
+            shadowOAM[8 + i].attr0 = (2<<8);
+        }
+    }
+
+
+    for (int i = 0; i < 5; i++) {
+        if (caught[i].active) {
+            shadowOAM[11 + i].attr0 = caught[i].row | (0<<13) | (0<<14);
+            shadowOAM[11 + i].attr1 = caught[i].col | (1<<14);
+            shadowOAM[11 + i].attr2 = ((caught[i].curFrame * 2)*32+(caught[i].aniState * 2));
+        } else {
+            shadowOAM[11 + i].attr0 = (2<<8);
+        }
+    }
+
 }
 
 void updateVillager() {
@@ -1140,23 +1211,31 @@ void updateVillager() {
         hOff++;
     }
 
-    if((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
+    if ((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
         villager.aniState = SPRITENET;
     }
 
-    if((!(~(oldButtons)&((1<<1))) && (~buttons & ((1<<1))))) {
-        villager.row = 160 - (villager.height / 2) - 70;
+    if ((!(~(oldButtons)&((1<<1))) && (~buttons & ((1<<1))))) {
+        villager.rdel = -10;
+        villager.gravity = ((260) >> 8);
+        villager.row--;
         villager.aniState = SPRITEJUMP;
+        jump = 1;
     }
 
-    if (frameCounter >= 20) {
-        frameCounter = 0;
-        villager.row = 160 - (villager.height / 2) - 50;
-        villager.aniState = SPRITERIGHT;
+    if (villager.row == (160 - (villager.height / 2) - 50)) {
+        jump = 0;
     }
 
-    if (villager.row == 160 - (villager.height / 2) - 70) {
-        frameCounter++;
+    if (villager.row < (160 - (villager.height / 2) - 50)
+        && villager.row >= 0 - villager.height) {
+        villager.rdel += villager.gravity;
+        villager.row += villager.rdel;
+        if (villager.row < 0) {
+            villager.row = 0;
+        }
+    } else {
+        villager.row = (160 - (villager.height / 2) - 50);
     }
 
 
@@ -1170,10 +1249,6 @@ void updateVillager() {
         villager.aniCounter++;
     }
 
-}
-
-void spawnSpider() {
-    spider.active = 1;
 }
 
 void updateSpider() {
@@ -1205,14 +1280,21 @@ void updateSpider() {
             spidersCaught++;
 
 
+            for (int i = 0; i < 5; i++) {
+                if (!caught[i].active) {
+                    caught[i].active = 1;
+                    break;
+                }
+            }
+
+
 
 
 
 
 
         } else if (collision(spider.col, spider.row, spider.width, spider.height,
-            villager.col, villager.row, villager.width / 2, villager.height)
-            && villager.row != (160 - (villager.height / 2) - 70)) {
+            villager.col, villager.row, villager.width / 2, villager.height)) {
 
 
             spider.active = 0;
@@ -1221,11 +1303,20 @@ void updateSpider() {
             spidersCaught = 0;
 
             attacks++;
-            lives--;
+
+
+            numLives--;
+
+            for (int i = 0; i < 3; i++) {
+                if (lives[i].active) {
+                    lives[i].active = 0;
+                    break;
+                }
+            }
 
 
             if (attacks == 3) {
-                lives = 0;
+                numLives = 0;
                 attacks = 0;
                 loseGame = 1;
             }
@@ -1234,6 +1325,10 @@ void updateSpider() {
         } else {
 
             spider.col -= (rand() % 3 / 2) + spider.cdel;
+
+            if (spider.col <= 0) {
+                spider.active = 0;
+            }
         }
 
  }
