@@ -22,10 +22,16 @@ int frameCounter;
 // SPRITENET is one anistate where the net is making contact with the ground
 // Idle does not have an actual image associated with it;
 // Whenever villager is idle, just show whatever state villager was before (prevAniState)
-enum {SPRITERIGHT, SPRITENET, SPRITEIDLE};
+enum {SPRITERIGHT, SPRITENET, SPRITEJUMP, SPRITEIDLE};
+// #define GRAVITY 100
+// #define JUMPPOWER 1500
+// #define SHIFTUP(num) ((num) << 8)
+// #define SHIFTDOWN(num) ((num) >> 8)
 
 // Horizontal Offset
 unsigned short hOff;
+
+unsigned short vOff;
 
 //random seed
 int seed;
@@ -44,6 +50,7 @@ void initializeGame() {
     DMANow(3, tempspritesheetTiles, &CHARBLOCK[4], tempspritesheetTilesLen / 2);
     
     hOff = 0;
+    vOff = 0;
 
     // initialize variables
     spidersCaught = 0;
@@ -71,6 +78,8 @@ void initializeVillager() {
     villager.curFrame = 0;
     villager.numFrames = 3; // 3 animation frames
 	villager.aniState = SPRITERIGHT; 
+    // villager.worldRow = SHIFTUP(SCREENHEIGHT / 2 + vOff);
+    // villager.worldCol = SCREENWIDTH / 2 - villager.height / 2 + hOff;
 }
 
 void initializeSpider() {
@@ -82,7 +91,7 @@ void initializeSpider() {
     spider.aniCounter = 0;
     spider.curFrame = 0; // row
     spider.numFrames = 3; // 3 animation frames
-	spider.aniState = 4; // col
+	spider.aniState = 6; // col
     spider.active = 0;
 }
 
@@ -100,7 +109,7 @@ void updateGame() {
     seed++;
     srand(seed);
 
-    if (spiderTimer >= (rand() % 3) * 5000) { // spider random spawn (but doesn't work correctly right now)
+    if (spiderTimer >= (rand() % 3) * 5000) { // spider random spawn 
 
         spiderTimer = 0;
 		spawnSpider();
@@ -118,9 +127,9 @@ void drawGame() {
     shadowOAM[0].attr2 = ATTR2_TILEID(villager.aniState * 8, villager.curFrame * 8);
 
     //set up spider sprite attributes
-    shadowOAM[4].attr0 = spider.row | ATTR0_4BPP | ATTR0_SQUARE;
-    shadowOAM[4].attr1 = spider.col | ATTR1_MEDIUM;
-    shadowOAM[4].attr2 = ATTR2_TILEID(spider.aniState * 4, spider.curFrame * 4);
+    shadowOAM[5].attr0 = spider.row | ATTR0_4BPP | ATTR0_SQUARE;
+    shadowOAM[5].attr1 = spider.col | ATTR1_MEDIUM;
+    shadowOAM[5].attr2 = ATTR2_TILEID(spider.aniState * 4, spider.curFrame * 4);
 }
 
 void updateVillager() {
@@ -145,6 +154,21 @@ void updateVillager() {
 
     if(BUTTON_PRESSED(BUTTON_A)) {
         villager.aniState = SPRITENET;
+    }
+
+    if(BUTTON_PRESSED(BUTTON_B)) {
+        villager.row = SCREENHEIGHT - (villager.height / 2) - 70;
+        villager.aniState = SPRITEJUMP;
+    }
+
+    if (frameCounter >= 20) {
+        frameCounter = 0;
+        villager.row = SCREENHEIGHT - (villager.height / 2) - 50;
+        villager.aniState = SPRITERIGHT;
+    }
+
+    if (villager.row == SCREENHEIGHT - (villager.height / 2) - 70) {
+        frameCounter++;
     }
 
     // If the villager aniState is idle (thus no key is held), 
@@ -199,7 +223,8 @@ void updateSpider() {
         // doesn't matter what state since it it reaches this point
         // an attack will happen (and the timing for the net has passed)
         } else if (collision(spider.col, spider.row, spider.width, spider.height,
-            villager.col, villager.row, villager.width / 2, villager.height)) {
+            villager.col, villager.row, villager.width / 2, villager.height)
+            && villager.row != (SCREENHEIGHT - (villager.height / 2) - 70)) {
 
             // spider is inactive
             spider.active = 0;

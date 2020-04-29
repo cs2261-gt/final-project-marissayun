@@ -43,11 +43,11 @@ initializeGame:
 	mov	r7, #78
 	mov	r6, #240
 	mov	r5, #110
-	mov	r4, #4
+	mov	r4, #6
 	ldr	r1, .L4+20
 	strh	r3, [r1]	@ movhi
 	ldr	r1, .L4+24
-	str	r3, [r1]
+	strh	r3, [r1]	@ movhi
 	ldr	r1, .L4+28
 	str	r3, [r1]
 	ldr	r1, .L4+32
@@ -61,16 +61,18 @@ initializeGame:
 	ldr	r1, .L4+48
 	str	r3, [r1]
 	ldr	r1, .L4+52
+	str	r3, [r1]
+	ldr	r1, .L4+56
 	str	r2, [r1, #12]
 	str	r2, [r1, #16]
-	ldr	r2, .L4+56
+	ldr	r2, .L4+60
 	str	r3, [r1, #36]
 	str	r3, [r1, #28]
 	str	r3, [r1, #24]
 	str	r3, [r2, #32]
 	str	r3, [r2, #24]
 	str	r3, [r2, #36]
-	ldr	r3, .L4+60
+	ldr	r3, .L4+64
 	stm	r2, {r5, r6}
 	str	r7, [r1]
 	str	lr, [r1, #8]
@@ -93,6 +95,7 @@ initializeGame:
 	.word	100728832
 	.word	tempspritesheetTiles
 	.word	hOff
+	.word	vOff
 	.word	spidersCaught
 	.word	attacks
 	.word	spiderTimer
@@ -153,7 +156,7 @@ initializeSpider:
 	mov	r4, #240
 	mov	lr, #3
 	mov	r0, #32
-	mov	ip, #4
+	mov	ip, #6
 	ldr	r3, .L12
 	ldr	r3, [r3, #16]
 	add	r3, r3, r3, lsr #31
@@ -207,11 +210,11 @@ drawGame:
 	lsl	r0, r0, #3
 	lsl	r2, r2, #2
 	strh	r4, [r3]	@ movhi
-	strh	lr, [r3, #32]	@ movhi
+	strh	lr, [r3, #40]	@ movhi
 	strh	ip, [r3, #2]	@ movhi
 	strh	r0, [r3, #4]	@ movhi
-	strh	r1, [r3, #34]	@ movhi
-	strh	r2, [r3, #36]	@ movhi
+	strh	r1, [r3, #42]	@ movhi
+	strh	r2, [r3, #44]	@ movhi
 	pop	{r4, r5, lr}
 	bx	lr
 .L17:
@@ -235,8 +238,8 @@ updateVillager:
 	push	{r4, r5, r6, lr}
 	ldr	r4, .L39
 	ldr	r3, [r4, #24]
-	cmp	r3, #2
-	movne	r2, #2
+	cmp	r3, #3
+	movne	r2, #3
 	ldr	r5, [r4, #36]
 	strne	r3, [r4, #20]
 	add	r3, r5, r5, lsl #4
@@ -257,44 +260,64 @@ updateVillager:
 	str	r1, [r4, #28]
 .L20:
 	ldr	r3, .L39+16
-	ldr	r2, .L39+20
 	ldrh	r3, [r3, #48]
-	ldrh	r2, [r2]
 	ands	r3, r3, #16
-	and	r2, r2, #1
-	bne	.L21
-	ldr	r0, .L39+24
-	ldrh	r1, [r0]
-	cmp	r2, #0
-	add	r2, r1, #1
-	str	r3, [r4, #24]
-	strh	r2, [r0]	@ movhi
-	bne	.L22
-.L27:
+	ldreq	r1, .L39+20
+	ldrheq	r2, [r1]
+	streq	r3, [r4, #24]
+	ldr	r3, .L39+24
+	addeq	r2, r2, #1
+	strheq	r2, [r1]	@ movhi
+	ldrh	r2, [r3]
+	tst	r2, #1
+	beq	.L22
+	ldr	r3, .L39+28
+	ldrh	r3, [r3]
+	tst	r3, #1
+	moveq	r3, #1
+	streq	r3, [r4, #24]
+.L22:
+	ldr	r3, [r4, #16]
+	add	r3, r3, r3, lsr #31
+	ldr	r1, .L39+32
+	asr	r3, r3, #1
+	tst	r2, #2
+	rsb	r3, r3, #0
+	ldr	r2, [r1]
+	add	r0, r3, #90
+	beq	.L23
+	ldr	ip, .L39+28
+	ldrh	ip, [ip]
+	tst	ip, #2
+	bne	.L23
+	mov	ip, #2
+	cmp	r2, #19
+	addle	r2, r2, #1
+	str	r0, [r4]
+	str	ip, [r4, #24]
+	strle	r2, [r1]
+	ble	.L25
+.L26:
+	mov	r2, #0
+	add	r3, r3, #110
+	str	r3, [r4]
+	str	r2, [r1]
+	str	r2, [r4, #24]
+.L25:
 	add	r5, r5, #1
 	str	r5, [r4, #36]
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L22:
-	ldr	r3, .L39+28
-	ldrh	r3, [r3]
-	tst	r3, #1
-	bne	.L27
-.L24:
-	mov	r3, #1
-	str	r3, [r4, #24]
-	b	.L27
-.L21:
-	cmp	r2, #0
-	beq	.L25
-	ldr	r3, .L39+28
-	ldrh	r3, [r3]
-	tst	r3, #1
-	beq	.L24
-.L25:
+.L23:
+	cmp	r2, #19
+	bgt	.L26
+	ldr	r3, [r4]
+	cmp	r3, r0
 	ldr	r3, [r4, #24]
-	cmp	r3, #2
-	bne	.L27
+	addeq	r2, r2, #1
+	streq	r2, [r1]
+	cmp	r3, #3
+	bne	.L25
 	mov	r2, #0
 	ldr	r3, [r4, #20]
 	str	r2, [r4, #28]
@@ -309,9 +332,10 @@ updateVillager:
 	.word	286331153
 	.word	__aeabi_idivmod
 	.word	67109120
-	.word	oldButtons
 	.word	hOff
+	.word	oldButtons
 	.word	buttons
+	.word	frameCounter
 	.size	updateVillager, .-updateVillager
 	.align	2
 	.global	spawnSpider
@@ -344,19 +368,19 @@ updateSpider:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r4, .L62
+	ldr	r4, .L64
 	ldr	r5, [r4, #32]
 	add	r3, r5, r5, lsl #4
-	ldr	r2, .L62+4
+	ldr	r2, .L64+4
 	add	r3, r3, r3, lsl #8
-	ldr	r1, .L62+8
+	ldr	r1, .L64+8
 	add	r3, r3, r3, lsl #16
 	sub	r2, r2, r3
 	cmp	r2, r1
 	sub	sp, sp, #16
 	bcs	.L45
 	ldr	r0, [r4, #24]
-	ldr	r3, .L62+12
+	ldr	r3, .L64+12
 	ldr	r1, [r4, #28]
 	add	r0, r0, #1
 	mov	lr, pc
@@ -367,33 +391,29 @@ updateSpider:
 	add	r5, r5, #1
 	cmp	r3, #0
 	str	r5, [r4, #32]
-	bne	.L59
-	ldr	r3, .L62+16
+	bne	.L62
+	ldr	r3, .L64+16
 	ldr	r2, [r3]
 .L54:
 	mov	r0, #240
 	mov	r1, #1
-	cmp	r2, #5
 	str	r0, [r4, #4]
 	str	r1, [r4, #36]
-	beq	.L60
+.L53:
+	cmp	r2, #5
+	bne	.L44
+	mov	r0, #0
+	mov	r1, #1
+	ldr	r2, .L64+20
+	str	r0, [r3]
+	str	r1, [r2]
 .L44:
 	add	sp, sp, #16
 	@ sp needed
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L60:
-	mov	r0, #0
-	mov	r1, #1
-	ldr	r2, .L62+20
-	str	r0, [r3]
-	str	r1, [r2]
-	add	sp, sp, #16
-	@ sp needed
-	pop	{r4, r5, r6, lr}
-	bx	lr
-.L59:
-	ldr	r5, .L62+24
+.L62:
+	ldr	r5, .L64+24
 	ldm	r5, {r2, r3}
 	ldr	r0, [r5, #16]
 	ldr	r1, [r5, #12]
@@ -405,14 +425,14 @@ updateSpider:
 	ldm	r2, {r2, r3}
 	ldr	r1, [r4]
 	ldr	r0, [r4, #4]
-	ldr	r6, .L62+28
+	ldr	r6, .L64+28
 	mov	lr, pc
 	bx	r6
 	cmp	r0, #0
 	beq	.L47
 	ldr	r3, [r5, #24]
 	cmp	r3, #1
-	beq	.L61
+	beq	.L63
 .L47:
 	ldr	r3, [r5, #12]
 	ldm	r5, {r1, r2}
@@ -431,10 +451,17 @@ updateSpider:
 	bx	r6
 	cmp	r0, #0
 	beq	.L49
+	ldr	r3, [r5, #16]
+	add	r3, r3, r3, lsr #31
+	ldr	r2, [r5]
+	asr	r3, r3, #1
+	rsb	r3, r3, #90
+	cmp	r2, r3
+	beq	.L49
 	mov	r1, #0
-	ldr	r2, .L62+32
+	ldr	r2, .L64+32
 	ldr	r3, [r2]
-	ldr	r0, .L62+16
+	ldr	r0, .L64+16
 	add	r3, r3, #1
 	cmp	r3, #3
 	str	r3, [r2]
@@ -442,21 +469,18 @@ updateSpider:
 	beq	.L50
 	mov	r0, #240
 	mov	r1, #1
-	ldr	r2, .L62+36
+	ldr	r2, .L64+36
 	ldr	r3, [r2]
 	sub	r3, r3, #1
 	str	r3, [r2]
 	str	r0, [r4, #4]
 	str	r1, [r4, #36]
-	add	sp, sp, #16
-	@ sp needed
-	pop	{r4, r5, r6, lr}
-	bx	lr
+	b	.L44
 .L49:
-	ldr	r3, .L62+40
+	ldr	r3, .L64+40
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L62+44
+	ldr	r3, .L64+44
 	smull	r2, r3, r0, r3
 	sub	r3, r3, r0, asr #31
 	add	r3, r3, r3, lsl #1
@@ -467,16 +491,14 @@ updateSpider:
 	add	r0, r2, r0, asr #1
 	ldr	r1, [r4, #36]
 	sub	r0, r3, r0
-	ldr	r3, .L62+16
+	ldr	r3, .L64+16
 	cmp	r1, #0
 	str	r0, [r4, #4]
 	ldr	r2, [r3]
-	beq	.L54
-	cmp	r2, #5
-	bne	.L44
-	b	.L60
-.L61:
-	ldr	r3, .L62+16
+	bne	.L53
+	b	.L54
+.L63:
+	ldr	r3, .L64+16
 	ldr	r2, [r3]
 	add	r2, r2, #1
 	str	r2, [r3]
@@ -485,16 +507,16 @@ updateSpider:
 	mov	r3, #1
 	mov	r0, #240
 	str	r1, [r2]
-	ldr	ip, .L62+48
-	ldr	r2, .L62+36
+	ldr	ip, .L64+48
+	ldr	r2, .L64+36
 	str	r3, [r4, #36]
 	str	r3, [ip]
 	str	r0, [r4, #4]
 	str	r1, [r2]
 	b	.L44
-.L63:
+.L65:
 	.align	2
-.L62:
+.L64:
 	.word	spider
 	.word	143165576
 	.word	286331153
@@ -520,32 +542,32 @@ updateGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
-	ldr	r3, .L68
+	ldr	r3, .L70
 	mov	lr, pc
 	bx	r3
 	mov	r3, #67108864
-	ldr	r2, .L68+4
+	ldr	r2, .L70+4
 	ldrh	r2, [r2]
 	lsr	r1, r2, #1
 	strh	r2, [r3, #16]	@ movhi
 	strh	r1, [r3, #20]	@ movhi
 	bl	updateVillager
 	bl	updateSpider
-	ldr	r3, .L68+8
+	ldr	r3, .L70+8
 	ldr	r0, [r3]
-	ldr	r2, .L68+12
+	ldr	r2, .L70+12
 	add	r0, r0, #1
 	str	r0, [r3]
 	mov	lr, pc
 	bx	r2
-	ldr	r3, .L68+16
+	ldr	r3, .L70+16
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L68+20
+	ldr	r3, .L70+20
 	smull	r2, r3, r0, r3
 	sub	r3, r3, r0, asr #31
 	add	r3, r3, r3, lsl #1
-	ldr	r2, .L68+24
+	ldr	r2, .L70+24
 	sub	r0, r0, r3
 	rsb	r3, r0, r0, lsl #5
 	add	r0, r0, r3, lsl #2
@@ -554,15 +576,15 @@ updateGame:
 	cmp	r3, r0, lsl #3
 	movge	r1, #1
 	movge	r3, r1
-	ldrge	r0, .L68+28
+	ldrge	r0, .L70+28
 	addlt	r3, r3, #1
 	strge	r1, [r0, #36]
 	str	r3, [r2]
 	pop	{r4, lr}
 	bx	lr
-.L69:
+.L71:
 	.align	2
-.L68:
+.L70:
 	.word	waitForVBlank
 	.word	hOff
 	.word	seed
@@ -574,6 +596,7 @@ updateGame:
 	.size	updateGame, .-updateGame
 	.comm	shadowOAM,1024,4
 	.comm	seed,4,4
+	.comm	vOff,2,2
 	.comm	hOff,2,2
 	.comm	frameCounter,4,4
 	.comm	winGame,4,4
@@ -583,5 +606,5 @@ updateGame:
 	.comm	attacks,4,4
 	.comm	spidersCaught,4,4
 	.comm	spider,40,4
-	.comm	villager,40,4
+	.comm	villager,48,4
 	.ident	"GCC: (devkitARM release 53) 9.1.0"

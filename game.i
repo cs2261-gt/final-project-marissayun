@@ -934,6 +934,8 @@ typedef struct {
     int curFrame;
     int numFrames;
     int aniCounter;
+    int worldRow;
+    int worldCol;
 } VILLAGER;
 
 
@@ -1008,10 +1010,16 @@ int frameCounter;
 
 
 
-enum {SPRITERIGHT, SPRITENET, SPRITEIDLE};
+enum {SPRITERIGHT, SPRITENET, SPRITEJUMP, SPRITEIDLE};
+
+
+
+
 
 
 unsigned short hOff;
+
+unsigned short vOff;
 
 
 int seed;
@@ -1030,6 +1038,7 @@ void initializeGame() {
     DMANow(3, tempspritesheetTiles, &((charblock *)0x6000000)[4], 32768 / 2);
 
     hOff = 0;
+    vOff = 0;
 
 
     spidersCaught = 0;
@@ -1057,6 +1066,8 @@ void initializeVillager() {
     villager.curFrame = 0;
     villager.numFrames = 3;
  villager.aniState = SPRITERIGHT;
+
+
 }
 
 void initializeSpider() {
@@ -1068,7 +1079,7 @@ void initializeSpider() {
     spider.aniCounter = 0;
     spider.curFrame = 0;
     spider.numFrames = 3;
- spider.aniState = 4;
+ spider.aniState = 6;
     spider.active = 0;
 }
 
@@ -1104,9 +1115,9 @@ void drawGame() {
     shadowOAM[0].attr2 = ((villager.curFrame * 8)*32+(villager.aniState * 8));
 
 
-    shadowOAM[4].attr0 = spider.row | (0<<13) | (0<<14);
-    shadowOAM[4].attr1 = spider.col | (2<<14);
-    shadowOAM[4].attr2 = ((spider.curFrame * 4)*32+(spider.aniState * 4));
+    shadowOAM[5].attr0 = spider.row | (0<<13) | (0<<14);
+    shadowOAM[5].attr1 = spider.col | (2<<14);
+    shadowOAM[5].attr2 = ((spider.curFrame * 4)*32+(spider.aniState * 4));
 }
 
 void updateVillager() {
@@ -1131,6 +1142,21 @@ void updateVillager() {
 
     if((!(~(oldButtons)&((1<<0))) && (~buttons & ((1<<0))))) {
         villager.aniState = SPRITENET;
+    }
+
+    if((!(~(oldButtons)&((1<<1))) && (~buttons & ((1<<1))))) {
+        villager.row = 160 - (villager.height / 2) - 70;
+        villager.aniState = SPRITEJUMP;
+    }
+
+    if (frameCounter >= 20) {
+        frameCounter = 0;
+        villager.row = 160 - (villager.height / 2) - 50;
+        villager.aniState = SPRITERIGHT;
+    }
+
+    if (villager.row == 160 - (villager.height / 2) - 70) {
+        frameCounter++;
     }
 
 
@@ -1185,7 +1211,8 @@ void updateSpider() {
 
 
         } else if (collision(spider.col, spider.row, spider.width, spider.height,
-            villager.col, villager.row, villager.width / 2, villager.height)) {
+            villager.col, villager.row, villager.width / 2, villager.height)
+            && villager.row != (160 - (villager.height / 2) - 70)) {
 
 
             spider.active = 0;

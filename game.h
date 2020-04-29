@@ -10,6 +10,8 @@ typedef struct {
     int curFrame;
     int numFrames;
     int aniCounter;
+    int worldRow;
+    int worldCol;
 } VILLAGER;
 
 // spider struct
