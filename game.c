@@ -297,6 +297,12 @@ void updateSpider() {
                     break;
                 }
             }
+            // set the all caught sprites to be inactive since score is reset
+            for (int i = 0; i < MAXCAUGHT; i++) {
+                if (caught[i].active) {
+                    caught[i].active = 0;
+                }
+            }
 
             // update attacks & check for loseGame
             if (attacks == 3) { 

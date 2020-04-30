@@ -38,6 +38,8 @@
 #include "airport.h"
 #include "islandnight.h"
 #include "prologue.h"
+// #include "open.h"
+// #include "close.h"
 
 //prototypes
 void initialize();
@@ -174,6 +176,7 @@ void start() {
 	}
 
 	if (BUTTON_PRESSED(BUTTON_SELECT)) {
+		// playSoundB(open, 0);
 		goToInstructions();
 	}
 }
@@ -207,6 +210,7 @@ void goToInstructions() {
 void instructions() {
 
 	if (BUTTON_PRESSED(BUTTON_SELECT)) {
+		// playSoundB(close, 0);
 		goToStart();
 	}
 }
@@ -244,6 +248,7 @@ void game() {
 	//switching states
 	if (BUTTON_PRESSED(BUTTON_SELECT)) {
 		// Pause the music when transitioning from game to pause screen.
+		// playSoundB(open, 0);
 		pauseSound();
 
 		goToPause();
@@ -290,6 +295,7 @@ void pause() {
 
 	if (BUTTON_PRESSED(BUTTON_START)) {
 		// Unpause the music when transitioning from pause to game screen.
+		// playSoundB(close, 0);
 		unpauseSound();
 		goToGame();
 	}

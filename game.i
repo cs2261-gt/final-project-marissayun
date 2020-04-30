@@ -1314,6 +1314,12 @@ void updateSpider() {
                 }
             }
 
+            for (int i = 0; i < 5; i++) {
+                if (caught[i].active) {
+                    caught[i].active = 0;
+                }
+            }
+
 
             if (attacks == 3) {
                 numLives = 0;

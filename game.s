@@ -523,19 +523,19 @@ updateSpider:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, r5, r6, lr}
-	ldr	r4, .L98
+	ldr	r4, .L104
 	ldr	r5, [r4, #32]
 	add	r3, r5, r5, lsl #4
-	ldr	r2, .L98+4
+	ldr	r2, .L104+4
 	add	r3, r3, r3, lsl #8
-	ldr	r1, .L98+8
+	ldr	r1, .L104+8
 	add	r3, r3, r3, lsl #16
 	sub	r2, r2, r3
 	cmp	r2, r1
 	sub	sp, sp, #16
 	bcs	.L69
 	ldr	r0, [r4, #24]
-	ldr	r3, .L98+12
+	ldr	r3, .L104+12
 	ldr	r1, [r4, #28]
 	add	r0, r0, #1
 	mov	lr, pc
@@ -546,34 +546,34 @@ updateSpider:
 	add	r5, r5, #1
 	cmp	r3, #0
 	str	r5, [r4, #32]
-	bne	.L94
+	bne	.L100
 .L70:
-	ldr	r3, .L98+16
+	ldr	r3, .L104+16
 	ldr	r2, [r3]
-.L82:
+.L84:
 	mov	r0, #240
 	mov	r1, #1
 	cmp	r2, #5
 	str	r0, [r4, #4]
 	str	r1, [r4, #36]
-	beq	.L95
+	beq	.L101
 .L68:
 	add	sp, sp, #16
 	@ sp needed
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L95:
+.L101:
 	mov	r0, #0
 	mov	r1, #1
-	ldr	r2, .L98+20
+	ldr	r2, .L104+20
 	str	r0, [r3]
 	str	r1, [r2]
 	add	sp, sp, #16
 	@ sp needed
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L94:
-	ldr	r5, .L98+24
+.L100:
+	ldr	r5, .L104+24
 	ldm	r5, {r2, r3}
 	ldr	r0, [r5, #12]
 	ldr	r1, [r5, #8]
@@ -585,14 +585,14 @@ updateSpider:
 	ldm	r2, {r2, r3}
 	ldr	r1, [r4]
 	ldr	r0, [r4, #4]
-	ldr	r6, .L98+28
+	ldr	r6, .L104+28
 	mov	lr, pc
 	bx	r6
 	cmp	r0, #0
 	beq	.L71
 	ldr	r3, [r5, #20]
 	cmp	r3, #1
-	beq	.L96
+	beq	.L102
 .L71:
 	ldr	r3, [r5, #8]
 	ldm	r5, {r1, r2}
@@ -611,31 +611,41 @@ updateSpider:
 	bx	r6
 	cmp	r0, #0
 	beq	.L75
-	mov	r0, #0
-	ldr	r2, .L98+32
-	ldr	lr, .L98+36
-	ldr	r5, .L98+40
-	ldr	ip, [r2, #16]
-	ldr	r3, [lr]
-	ldr	r1, [r5]
-	cmp	ip, r0
-	ldr	ip, .L98+16
-	add	r3, r3, #1
-	sub	r1, r1, #1
-	str	r3, [lr]
-	str	r1, [r5]
-	str	r0, [ip]
+	mov	r1, #0
+	ldr	r3, .L104+32
+	ldr	lr, .L104+36
+	ldr	r5, .L104+40
+	ldr	ip, [r3, #16]
+	ldr	r0, [lr]
+	ldr	r2, [r5]
+	cmp	ip, r1
+	ldr	ip, .L104+16
+	add	r0, r0, #1
+	sub	r2, r2, #1
+	str	r0, [lr]
+	str	r2, [r5]
+	str	r1, [ip]
 	bne	.L76
-	ldr	r1, [r2, #44]
-	cmp	r1, r0
-	bne	.L84
-	ldr	r1, [r2, #72]
-	cmp	r1, r0
-	movne	r0, #2
+	ldr	r2, [r3, #44]
+	cmp	r2, r1
+	bne	.L86
+	ldr	r2, [r3, #72]
+	cmp	r2, r1
+	movne	r1, #2
 	bne	.L76
 .L77:
-	cmp	r3, #3
-	beq	.L78
+	mov	ip, #0
+	ldr	r3, .L104+44
+	add	r1, r3, #140
+.L79:
+	ldr	r2, [r3, #16]
+	cmp	r2, #0
+	strne	ip, [r3, #16]
+	add	r3, r3, #28
+	cmp	r3, r1
+	bne	.L79
+	cmp	r0, #3
+	beq	.L80
 	mov	r2, #240
 	mov	r3, #1
 	str	r2, [r4, #4]
@@ -645,10 +655,10 @@ updateSpider:
 	pop	{r4, r5, r6, lr}
 	bx	lr
 .L75:
-	ldr	r3, .L98+44
+	ldr	r3, .L104+48
 	mov	lr, pc
 	bx	r3
-	ldr	r3, .L98+48
+	ldr	r3, .L104+52
 	smull	r2, r3, r0, r3
 	sub	r3, r3, r0, asr #31
 	add	r3, r3, r3, lsl #1
@@ -662,58 +672,58 @@ updateSpider:
 	str	r0, [r4, #4]
 	ble	.L70
 	ldr	r2, [r4, #36]
-	ldr	r3, .L98+16
+	ldr	r3, .L104+16
 	cmp	r2, #0
 	ldr	r2, [r3]
-	beq	.L82
+	beq	.L84
 	cmp	r2, #5
 	bne	.L68
-	b	.L95
-.L96:
-	ldr	lr, .L98+52
+	b	.L101
+.L102:
+	ldr	lr, .L104+44
 	mov	r1, #0
 	mov	r0, lr
-	ldr	r3, .L98+16
+	ldr	r3, .L104+16
 	ldr	r2, [r3]
 	add	r2, r2, #1
 	str	r2, [r3]
 .L74:
 	ldr	ip, [r0, #16]
 	cmp	ip, #0
-	beq	.L97
+	beq	.L103
 	add	r1, r1, #1
 	cmp	r1, #5
 	add	r0, r0, #28
 	bne	.L74
-	b	.L82
-.L78:
+	b	.L84
+.L80:
 	mov	r2, #0
 	mov	r3, #1
 	mov	r1, #240
-	ldr	r0, .L98+56
+	ldr	r0, .L104+56
 	str	r2, [r5]
 	str	r2, [lr]
 	str	r3, [r4, #36]
 	str	r3, [r0]
 	str	r1, [r4, #4]
 	b	.L68
-.L84:
-	mov	r0, #1
+.L86:
+	mov	r1, #1
 .L76:
-	mov	r1, #0
-	rsb	r0, r0, r0, lsl #3
-	add	r2, r2, r0, lsl #2
-	str	r1, [r2, #16]
+	mov	r2, #0
+	rsb	r1, r1, r1, lsl #3
+	add	r3, r3, r1, lsl #2
+	str	r2, [r3, #16]
 	b	.L77
-.L97:
+.L103:
 	mov	r0, #1
 	rsb	r1, r1, r1, lsl #3
 	add	r1, lr, r1, lsl #2
 	str	r0, [r1, #16]
-	b	.L82
-.L99:
+	b	.L84
+.L105:
 	.align	2
-.L98:
+.L104:
 	.word	spider
 	.word	143165576
 	.word	286331153
@@ -725,9 +735,9 @@ updateSpider:
 	.word	lives
 	.word	attacks
 	.word	numLives
+	.word	caught
 	.word	rand
 	.word	1431655766
-	.word	caught
 	.word	loseGame
 	.size	updateSpider, .-updateSpider
 	.align	2
@@ -741,29 +751,29 @@ updateGame:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	push	{r4, lr}
-	ldr	r3, .L102
+	ldr	r3, .L108
 	mov	lr, pc
 	bx	r3
 	mov	r3, #67108864
-	ldr	r2, .L102+4
+	ldr	r2, .L108+4
 	ldrh	r2, [r2]
 	lsr	r1, r2, #1
 	strh	r2, [r3, #16]	@ movhi
 	strh	r1, [r3, #20]	@ movhi
 	bl	updateVillager
 	bl	updateSpider
-	ldr	r3, .L102+8
+	ldr	r3, .L108+8
 	ldr	r0, [r3]
-	ldr	r2, .L102+12
+	ldr	r2, .L108+12
 	add	r0, r0, #1
 	str	r0, [r3]
 	mov	lr, pc
 	bx	r2
 	pop	{r4, lr}
 	bx	lr
-.L103:
+.L109:
 	.align	2
-.L102:
+.L108:
 	.word	waitForVBlank
 	.word	hOff
 	.word	seed
