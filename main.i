@@ -1507,20 +1507,8 @@ extern const signed char islandnight[1465920];
 
 extern const signed char prologue[976608];
 # 41 "main.c" 2
-# 1 "open.h" 1
 
 
-
-
-extern const signed char open[11232];
-# 42 "main.c" 2
-# 1 "close.h" 1
-
-
-
-
-extern const signed char close[11232];
-# 43 "main.c" 2
 
 
 void initialize();
@@ -1657,8 +1645,8 @@ void start() {
  }
 
  if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+
   goToInstructions();
-  playSoundB(open, 0);
  }
 }
 
@@ -1691,8 +1679,8 @@ void goToInstructions() {
 void instructions() {
 
  if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
+
   goToStart();
-  playSoundB(close, 0);
  }
 }
 
@@ -1729,8 +1717,9 @@ void game() {
 
  if ((!(~(oldButtons)&((1<<2))) && (~buttons & ((1<<2))))) {
 
+
   pauseSound();
-  playSoundB(open, 0);
+
   goToPause();
  } else if (winGame) {
   stopSound();
@@ -1775,7 +1764,7 @@ void pause() {
 
  if ((!(~(oldButtons)&((1<<3))) && (~buttons & ((1<<3))))) {
 
-  playSoundB(close, 0);
+
   unpauseSound();
   goToGame();
  }
